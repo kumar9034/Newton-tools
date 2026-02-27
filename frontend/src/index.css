@@ -1,0 +1,31 @@
+@keyframes snowFall {
+  0% {
+    transform: translateY(-10vh) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) translateX(40px);
+    opacity: 0.4;
+  }
+}
+
+.snowflake {
+  position: absolute;
+  top: -10vh;
+  color: white;
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: none;
+  animation-name: snowFall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite; /* 🔥 CONTINUOUS */
+}
+
+
+
+
+
+@import "tailwindcss";
