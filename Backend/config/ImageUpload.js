@@ -1,45 +1,36 @@
 import multer from "multer";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
+import multerS3 from "multer-s3";
+import { S3Client } from "@aws-sdk/client-s3";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const baseUploadPath = path.join(__dirname, "../uploads");
-
-if (!fs.existsSync(baseUploadPath)) {
-  fs.mkdirSync(baseUploadPath, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const folderPath = path.join(baseUploadPath, "images");
-
-    if (!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath, { recursive: true });
-    }
-
-    cb(null, folderPath);
+// S3 client setup
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
   },
-
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
 });
 
 const uploadimage = multer({
-  storage,
-  limits: { fileSize: 15 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.S3_BUCKET,
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    key: (req, file, cb) => {
+      const uniqueName = `images/${Date.now()}-${file.originalname}`;
+      cb(null, uniqueName);
+    },
+  }),
 
+  limits: { fileSize: 15 * 1024 * 1024 },
+
+  fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith("image/")) {
       cb(null, true);
     } else {
       cb(new Error("Only image files are allowed ❌"));
     }
-
-  }
+  },
 });
 
 export default uploadimage;
