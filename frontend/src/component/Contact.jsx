@@ -14,7 +14,7 @@ const stores = [
 
 
 
-const StoreSection = () => {
+const Contact = () => {
   const [selectedStore, setSelectedStore] = useState(stores[0]);
   
   const mapSrc = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2610.234576066871!2d-122.851421224636!3d49.13917048090765!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5485da2be863e355%3A0x9ebc7e9a8d4d8d30!2sNewton%20Tool%20Repair!5e0!3m2!1sen!2sin!4v1769660652553!5m2!1sen!2sin`;
@@ -90,4 +90,4 @@ const StoreSection = () => {
   );
 };
 
-export default StoreSection;
+export default Contact;

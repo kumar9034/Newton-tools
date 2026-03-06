@@ -3,7 +3,7 @@ import gsap from "gsap";
 import Flyer from "./Flyer";
 import Slider from "./Slider";
 import Category from "./Category";
-import Contact from "./contact";
+import Contact from "./Contact";
 import Section5 from "./Section_5";
 import Cardsbrands from "./Cardsbrands";
 import { useNavigate } from "react-router-dom";
