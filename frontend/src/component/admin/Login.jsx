@@ -24,7 +24,7 @@ const Login = () => {
     try {
       // Replace '/api/login' with your real auth endpoint
 
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/login`, form) 
+      const res = await axios.post(`/api/admin/login`, form) 
     
 
       console.log(res)
