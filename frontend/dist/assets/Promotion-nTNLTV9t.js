@@ -1,0 +1,1 @@
+import{j as r}from"./index-BL0WRw2g.js";import{H as o,c as s}from"./Footer-fevArPFn.js";import{F as t}from"./Flyer-BpcGp01Z.js";import"./index-C0Zqfgkc.js";const x=()=>r.jsxs("div",{children:[r.jsx(o,{}),r.jsx("div",{className:"w-full h-auto pt-30",children:r.jsx(t,{})}),r.jsx(s,{})]});export{x as default};

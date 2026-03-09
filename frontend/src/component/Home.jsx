@@ -3,6 +3,7 @@ import Hero_section from './Hero_section'
 import Header from './Header'
 import Footer from './Footer'
 import gsap from "gsap";
+import axios from 'axios';
 
 
 const Home = () => {
@@ -20,6 +21,14 @@ const Home = () => {
       }
     );
   }, []);
+  useEffect(()=>{
+    const fatch =async()=>{
+      const res =await axios.get(`${import.meta.env.VITE_API_URL}`)
+      console.log(res)
+    }
+    fatch()
+  },[])
+
 
   return (
     <div >

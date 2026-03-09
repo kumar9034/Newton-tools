@@ -62,9 +62,9 @@ const FlyerViewer = () => {
     const fetchPdf = async () => {
       try {
         const res = await axios.get(
-          `/api/documents/latest`
+          `${import.meta.env.VITE_API_URL}/api/documents/latest`
         );
-        // const url = `${import.meta.env.VITE_API_URL}${res.data.pdf}`;
+        const url = `${import.meta.env.VITE_API_URL}${res.data.pdf}`;
         setPdfUrl(url);
       } catch (err) {
         console.error("PDF fetch error:", err);
