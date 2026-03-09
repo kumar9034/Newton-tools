@@ -17,7 +17,7 @@ const s3 = new S3Client({
 const uploadimage = multer({
   storage: multerS3({
     s3: s3,
-    bucket: process.env.S3_BUCKET,
+    bucket: process.env.AWS_BUCKET_NAME,
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: (req, file, cb) => {
       const uniqueName = `images/${Date.now()}-${file.originalname}`;
