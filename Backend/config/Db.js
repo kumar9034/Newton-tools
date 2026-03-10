@@ -11,7 +11,7 @@ const Db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: "newtontools"
+  database: process.env.DATABASE
 });
 
 Db.connect((err) => {
