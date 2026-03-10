@@ -6,7 +6,7 @@ export class AdminController {
 
   static async postSignup(req, res) {
     const { name, email, password } = req.body ?? {};
-
+    console.log(name)
     if (!name || !email || !password) {
       return res.status(400).json({ message: "All fields required" });
     }
