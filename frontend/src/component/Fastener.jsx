@@ -15,7 +15,7 @@ const Fastener = () => {
           console.log("Fetched images:", res.data.images);
         if (res.data.images) {
           const fullUrls = res.data.images.map(
-            (img) => `${import.meta.env.VITE_API_URL}${img.folder_path}`
+            (img) => `${img.folder_path}`
           );
 
           setImages(fullUrls);

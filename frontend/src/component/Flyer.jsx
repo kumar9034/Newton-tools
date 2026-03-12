@@ -39,7 +39,7 @@ const Snow = () => {
 
 const FlyerViewer = () => {
   const bookRef = useRef();
-  const [pdfurl, setPdfUrl] = useState(null);
+  const [pdfurl, setPdfUrl] = useState();
   const [numPages, setNumPages] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [size, setSize] = useState({ width: 300, height: 500 });
@@ -64,14 +64,15 @@ const FlyerViewer = () => {
         const res = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/documents/latest`
         );
-        const url = `${import.meta.env.VITE_API_URL}${res.data.pdf}`;
-        setPdfUrl(url);
+        setPdfUrl(res.data.pdf);
+      
       } catch (err) {
         console.error("PDF fetch error:", err);
       }
     };
+
     fetchPdf();
-  }, []);
+  }, [setPdfUrl]);
 
   const nextPage = () => bookRef.current?.pageFlip().flipNext();
   const prevPage = () => bookRef.current?.pageFlip().flipPrev();
@@ -116,9 +117,11 @@ const FlyerViewer = () => {
               <FaChevronLeft />
             </button>
 
-            <div className="rounded-lg shadow-2xl bg-white sm:w-[25vw] w-[78vw] overflow-hidden px-5">
+            <div className="rounded-lg shadow-2xl bg-white sm:w-[25vw] w-[70vw] h-[77vh] overflow-hidden px-5">
               <Document
-                file={pdfurl}
+                file={{
+                  url: pdfurl
+                }}
                 onLoadSuccess={({ numPages }) => setNumPages(numPages)}
                 loading={<p>Loading PDF...</p>}
               >
@@ -165,7 +168,7 @@ const FlyerViewer = () => {
         )}
 
         {/* ZOOM */}
-        <div className="mt-6 w-64">
+        <div className="mt-6 w-64 mb-5">
           <input
             type="range"
             min="1"

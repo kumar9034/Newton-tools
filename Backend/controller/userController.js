@@ -10,18 +10,22 @@ class DocumentController {
 
     static upload(req, res) {
         const { name } = req.body;
-        const pdf = req.file?.filename;
+
+        const pdf = req.file?.location;   // S3 file URL
 
         if (!pdf) {
             return res.status(400).json({ message: "PDF is required ❌" });
         }
-        const filepath = `/uploads/${pdf}`
 
-        DocumentModel.uploadDocument({ name, pdf: filepath }, (err, result) => {
+        DocumentModel.uploadDocument({ name, pdf }, (err, result) => {
             if (err) {
                 return res.status(500).json({ error: err });
             }
-            res.status(200).json({ message: "PDF uploaded successfully ✅" });
+
+            res.status(200).json({
+                message: "PDF uploaded successfully ✅",
+                url: pdf
+            });
         });
     }
 
@@ -29,29 +33,75 @@ class DocumentController {
 
 }
 
+
 class PDFgetcontroller {
 
-   static async getLatest(req, res) {
-    DocumentModel.getLatestDocument((err, result) => {
+    static async getLatest(req, res) {
+        DocumentModel.getLatestDocument((err, result) => {
 
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
 
-        if (!result || result.length === 0) {
-            return res.status(404).json({ error: "No document found" });
-        }
+            if (!result || result.length === 0) {
+                return res.status(404).json({ error: "No document found" });
+            }
 
-        const document = result[0];
+            const document = result[0];
 
-        return res.json({
-            id: document.id,
-            pdf: document.pdf, // yaha se pdf milega
-            created_at: document.created_at
+            return res.json({
+                id: document.id,
+                pdf: document.pdf, // yaha se pdf milega
+                created_at: document.created_at
+            });
+
+        });
+    }
+
+    static getAllDocuments = async (req, res) => {
+
+        DocumentModel.getAllDocuments((err, result) => {
+
+            if (err) {
+                return res.status(500).json({ error: err });
+            }
+
+            res.json(result);
+
         });
 
+    };
+
+
+   static deleteDocuments = async (req, res) => {
+
+  const { id } = req.body;
+
+  if (!id || id.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "No IDs provided"
     });
-}
+  }
+
+  DocumentModel.deleteDocuments(id, (error, result) => {
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        error: error
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Documents deleted successfully",
+      deleted: result.affectedRows
+    });
+
+  });
+
+};
 
 }
 
@@ -67,19 +117,23 @@ class imagescontroller {
 
             const folderName = req.body.name || "images";
 
-            // 🔥 Sab files ka full path banao
-            const images = req.files.map(file => ({
-                folder_name: folderName,
-                image_path: `/uploads/${folderName}/${file.filename}`
-            }));
+            const images = req.files.map(file => {
 
-            // ✅ Model ko Promise based call karo
+                console.log(file.key);
+                console.log(file.location);
+
+                return {
+                    folder_name: folderName,
+                    image_path: file.location
+                };
+
+            });
+
             const result = await ImageModel.saveMultipleImages(images);
 
             res.json({
                 message: "Images uploaded successfully ✅",
-                images,
-                dbResult: result
+                images
             });
 
         } catch (error) {
@@ -89,8 +143,11 @@ class imagescontroller {
             res.status(500).json({
                 error: error.message
             });
+
         }
+
     }
+
 
 
     static async getAllImages(req, res) {

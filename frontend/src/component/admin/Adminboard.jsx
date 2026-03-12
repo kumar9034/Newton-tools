@@ -1,43 +1,58 @@
-import React, { useState } from "react";
-import axios from "axios"
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Images from "./Images";
 import SliderUploads from "./SliderUploads";
 
 const Adminboard = () => {
+
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("Dashboard");
-  const token = localStorage.getItem("token");
 
-  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
-  if (!token) {
-    return  window.location.href = "/admin/login";;
-  }
+  const [pdfs, setPdfs] = useState([]);
+  const [images, setImages] = useState([]);
+  const [sliderImages, setSliderImages] = useState([]);
 
+  const [selectedPdfs, setSelectedPdfs] = useState([]);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [selectedSliders, setSelectedSliders] = useState([]);
+
+  const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
+  // FILE CHANGE
   const handleFileChange = (e) => {
     setError("");
-    const selected = e.target.files[0];
 
+    const selected = e.target.files[0];
     if (!selected) return;
 
     if (selected.type !== "application/pdf") {
-      setError("Only PDF files are allowed");
+      setError("Only PDF files allowed");
       return;
     }
 
     if (selected.size > MAX_FILE_SIZE) {
-      setError("File size must be less than 50MB");
+      setError("File must be less than 50MB");
       return;
     }
-    setFile(selected);
 
-    console.log("Selected file:", selected);
+    setFile(selected);
   };
 
+  // SELECT CHECKBOX
+  const toggleSelect = (id, selected, setSelected) => {
+    if (selected.includes(id)) {
+      setSelected(selected.filter(item => item !== id));
+    } else {
+      setSelected([...selected, id]);
+    }
+  };
+
+  // PDF UPLOAD
   const handleupload = async () => {
+
     if (!file) {
-      setError("Please select a PDF file first");
+      setError("Please select PDF");
       return;
     }
 
@@ -45,65 +60,291 @@ const Adminboard = () => {
     formData.append("pdf", file);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/documents/upload`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log("Upload response:", response.data);
 
-      if (response.status === 200) {
-        alert("PDF uploaded successfully!");
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/documents/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
+
+      if (res.status === 200) {
+        alert("PDF Uploaded");
         setFile(null);
-        setError("");
-      } else {
-        setError("Failed to upload PDF");
+        fetchPdfs();
       }
+
     } catch (err) {
-      setError("Error uploading PDF");
+      setError("Upload failed");
+    }
+
+  };
+
+  // FETCH PDF
+  const fetchPdfs = async () => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/documents/allpdf`);
+
+      if (Array.isArray(res.data)) {
+        setPdfs(res.data);
+      } else {
+        setPdfs([]);
+      }
+
+    } catch (err) {
+      console.log(err);
     }
   };
 
+  // FETCH IMAGES
+  const fetchImages = async () => {
+    try {
+
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/documents/images`);
+
+      if (Array.isArray(res.data.images)) {
+        setImages(res.data.images);
+      } else {
+        setImages([]);
+      }
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // FETCH SLIDER
+  const fetchSlider = async () => {
+
+    try {
+
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/allimageslider`);
+
+      console.log("slider response:", res.data.data);
+
+      if (Array.isArray(res.data)) {
+        setSliderImages(res.data.data);
+      } else if (Array.isArray(res.data.data)) {
+        setSliderImages(res.data.data);
+      }
+      console.log()
+    } catch (err) {
+      console.log(err);
+    }
+    console.log(selectedImages)
+  };
+
   useEffect(() => {
-    const datafatch = async () => {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/documents/latest`)
-      console.log("Latest document:", res.data);
+    fetchPdfs();
+    fetchImages();
+    fetchSlider();
+  }, []);
+
+  // DELETE PDF
+  const deletePdfs = async () => {
+
+    if (selectedPdfs.length === 0) {
+      alert("Select PDF first");
+      return;
     }
 
-    datafatch()
-  }, [axios])
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/documents/deletepdf`,
+      { ids: selectedPdfs }
+    );
 
+    setPdfs(pdfs.filter(pdf => !selectedPdfs.includes(pdf.id)));
+    setSelectedPdfs([]);
+
+  };
+
+  // DELETE IMAGE
+  const deleteImages = async () => {
+
+    if (selectedImages.length === 0) {
+      alert("Select image first");
+      return;
+    }
+
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/documents/deleteimages`,
+      { ids: selectedImages }
+    );
+
+    setImages(images.filter(img => !selectedImages.includes(img.id)));
+    setSelectedImages([]);
+
+  };
+
+  // DELETE SLIDER
+  const deleteSliders = async () => {
+
+    if (selectedSliders.length === 0) {
+      alert("Select slider image first");
+      return;
+    }
+
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/documents/deletesliderimage`,
+      { ids: selectedSliders }
+    );
+
+    setSliderImages(
+      sliderImages.filter(img => !selectedSliders.includes(img.id))
+    );
+
+    setSelectedSliders([]);
+
+  };
 
   return (
+
     <div className="flex min-h-screen bg-gray-100">
 
-      {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white p-6 ">
+      {/* SIDEBAR */}
+
+      <aside className="w-64 bg-gray-900 text-white p-6">
+
         <h1 className="text-2xl font-bold text-yellow-400 mb-8">
-          <img src="/logo.svg" alt="" />
+          Admin Panel
         </h1>
 
-        <ul className="space-y-4 text-gray-300">
-          <li onClick={() => setActiveTab("Dashboard")} className="hover:text-yellow-400 cursor-pointer">Dashboard</li>
-          <li onClick={() => setActiveTab("Uploads")} className="hover:text-yellow-400 cursor-pointer">Flyer Upload</li>
-          <li onClick={() => setActiveTab("images-upload")} className="hover:text-yellow-400 cursor-pointer">Fastener</li>
-          <li onClick={() => setActiveTab("Slider-uploads")} className="hover:text-yellow-400 cursor-pointer">Slider upload</li>
+        <ul className="space-y-4">
+
+          <li onClick={() => setActiveTab("Dashboard")} className="cursor-pointer">
+            Dashboard
+          </li>
+
+          <li onClick={() => setActiveTab("Uploads")} className="cursor-pointer">
+            Flyer Upload
+          </li>
+
+          <li onClick={() => setActiveTab("images-upload")} className="cursor-pointer">
+            Fastener
+          </li>
+
+          <li onClick={() => setActiveTab("Slider-uploads")} className="cursor-pointer">
+            Slider Upload
+          </li>
+
         </ul>
+
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-8 h-screen overflow-hiden ">
+      {/* MAIN */}
 
-        {/* Header */}
-        <div className="flex justify-between mb-6">
-          <h2 className="text-2xl font-bold">Upload Dashboard</h2>
-          <button onClick={()=> {
-            localStorage.removeItem("token");
-            window.location.href = "/admin/login";
-          }} className="bg-yellow-500 px-4 py-2 rounded font-semibold hover:bg-yellow-600 active:scale-95 transition">
-            Logout
-          </button>
-        </div>
+      <main className="flex-1 p-8">
+
+        <h2 className="text-2xl font-bold mb-6">Media Manager</h2>
+
+        {activeTab === "Dashboard" && (
+
+          <div className="bg-white p-6 rounded shadow">
+
+            {/* PDF */}
+
+            <h3 className="font-semibold mb-3">PDF Files</h3>
+
+            {Array.isArray(pdfs) && pdfs.map(pdf => (
+
+              <div key={pdf.id} className="flex items-center gap-2 mb-2">
+
+                <input
+                  type="checkbox"
+                  checked={selectedPdfs.includes(pdf.id)}
+                  onChange={() =>
+                    toggleSelect(pdf.id, selectedPdfs, setSelectedPdfs)
+                  }
+                />
+                <div className=" w-full flex justify-between ">
+                <span>{pdf.pdf}</span>
+                <span>{new Date(pdf.created_at).toLocaleDateString()}</span>
+                </div>
+
+              </div>
+
+            ))}
+
+            <button
+              className="bg-red-500 text-white px-3 py-1 rounded mt-2 active:scale-95"
+              onClick={deletePdfs}
+            >
+              Delete Selected
+            </button>
+
+            {/* IMAGES */}
+
+            <h3 className="font-semibold mt-6 mb-3">Images</h3>
+
+            <div className="flex flex-col gap-2">
+
+              {Array.isArray(images) && images.map(img => (
+
+                <div key={img.id} className="">
+                  <div className=" flex flex-wrap  justify-between w-full ">
+
+                  <input
+                    type="checkbox"
+                    // className="absolute top-2 left-2"
+                    checked={selectedImages.includes(img.id)}
+                    onChange={() =>
+                      toggleSelect(img.id, selectedImages, setSelectedImages)
+                    }
+                  />
+                  <div className="w-[97%] flex  gap-5 ">
+                  <span className="line-clamp-[1] ">{img.folder_path}</span>
+                  <span>{ new Date(img.created_at).toLocaleDateString()}</span>
+                  </div>
+                  </div>
+
+                </div>
+
+              ))}
+
+            </div>
+
+            <button
+              className="bg-red-500 text-white px-3 py-1 rounded mt-2 active:scale-95"
+              onClick={deleteImages}
+            >
+              Delete Selected
+            </button>
+
+            {/* SLIDER */}
+
+            <h3 className="font-semibold mt-6 mb-3">Slider Images</h3>
+
+            {Array.isArray(sliderImages) && sliderImages.map(img => (
+
+              <div key={img.id} className="flex w-full justify-between gap-2 mb-2">
+
+                <input
+                  type="checkbox"
+                  checked={selectedSliders.includes(img.id)}
+                  onChange={() =>
+                    toggleSelect(img.id, selectedSliders, setSelectedSliders)
+                  }
+                  />
+                <span className="line-clamp-[1] w-[95%]">{img.image_path}</span>
+                  <span>{ new Date(img.created_at).toLocaleDateString()}</span>
+
+              </div>
+
+            ))}
+
+            <button
+              className="bg-red-500 text-white px-3 py-1 rounded mt-2 active:scale-95"
+              onClick={deleteSliders}
+            >
+              Delete Selected
+            </button>
+
+          </div>
+
+        )}
 
         {/* Upload Card */}
         {
@@ -156,22 +397,15 @@ const Adminboard = () => {
           )
         }
 
-        {activeTab === "Dashboard" && (
-          <div className="bg-white rounded-xl shadow p-6">
-            <h3 className="font-semibold mb-3">Dashboard Overview</h3>
-            <p className="text-gray-600">Welcome to the admin dashboard!</p>
-          </div>
-        )}
-        {activeTab === "images-upload" && (
-          <Images/>
-        )}
-        {activeTab === "Slider-uploads" && (
-          <SliderUploads/>
-        )}
+        {activeTab === "images-upload" && <Images />}
+        {activeTab === "Slider-uploads" && <SliderUploads />}
 
       </main>
+
     </div>
+
   );
+
 };
 
 export default Adminboard;

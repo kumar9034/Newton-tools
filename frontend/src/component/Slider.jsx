@@ -1,44 +1,48 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const slides = [
-  {
-    title: "Professional Tools",
-    desc: "Our professional tools are designed to meet the highest standards of quality, strength, and precision.",
-    image: "ChatGPT Image Jan 23, 2026, 12_45_06 PM.png"
-  },
-  {
-    title: "Trusted Performance",
-    desc: "Engineered to deliver trusted performance using high-quality materials and durability testing.",
-    image: "slider-2.png"
-  },
-  {
-    title: "Fast & Reliable",
-    desc: "Built to deliver fast performance and reliable results for professional and everyday use.",
-    image: "Bosch-banner_new_revised.jpg"
-  }
-];
+// const slides = [
+//   {
+//     title: "Professional Tools",
+//     desc: "Our professional tools are designed to meet the highest standards of quality, strength, and precision.",
+//     image: "ChatGPT Image Jan 23, 2026, 12_45_06 PM.png"
+//   },
+//   {
+//     title: "Trusted Performance",
+//     desc: "Engineered to deliver trusted performance using high-quality materials and durability testing.",
+//     image: "slider-2.png"
+//   },
+//   {
+//     title: "Fast & Reliable",
+//     desc: "Built to deliver fast performance and reliable results for professional and everyday use.",
+//     image: "Bosch-banner_new_revised.jpg"
+//   }
+// ];
 
 export default function Slider() {
   const [current, setCurrent] = useState(0);
+  const [slides, setslider ] = useState([])
 
+ useEffect(() => {
+  if (slides.length === 0) return;
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+  const interval = setInterval(() => {
+    setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+  }, 4000);
+
+  return () => clearInterval(interval);
+
+}, [slides.length]);
 
   useEffect(()=>{
     const fatchdata  = async()=>{
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/allimageslider`)
-
-      console.log(res.data.data)
+      setslider(res.data.data)
+      // console.log(slides)
 
     }
     fatchdata()
-  }, [])
+  },[slides])
 
 
 
@@ -56,7 +60,7 @@ export default function Slider() {
           >
             {/* Image */}
             <img
-              src={slide.image}
+              src={slide.image_path}
               alt={slide.title}
               className="w-full h-full object-cover"
             />

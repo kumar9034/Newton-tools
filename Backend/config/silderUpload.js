@@ -1,45 +1,32 @@
+import dotenv from "dotenv";
 import multer from "multer";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
+import multerS3 from "multer-s3";
+import { S3Client } from "@aws-sdk/client-s3";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+dotenv.config();
 
-const baseUploadPath = path.join(__dirname, "../uploads");
-
-if (!fs.existsSync(baseUploadPath)) {
-  fs.mkdirSync(baseUploadPath, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const folderPath = path.join(baseUploadPath, "sliderimage");
-
-    if (!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath, { recursive: true });
-    }
-
-    cb(null, folderPath);
-  },
-
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
   }
 });
 
-const SilderUpload = multer({
-  storage,
-  limits: { fileSize: 15 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
+const uploadimage = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: "newtontools-images-123",
+    contentType: multerS3.AUTO_CONTENT_TYPE,
 
-    if (file.mimetype.startsWith("image/")) {
-      cb(null, true);
-    } else {
-      cb(new Error("Only image files are allowed ❌"));
+    key: function (req, file, cb) {
+
+      const filename = Date.now() + "-" + file.originalname;
+
+      cb(null, "uploads/" + filename);
+
     }
-
-  }
+  })
 });
 
-export default SilderUpload;
+export default uploadimage;

@@ -1,0 +1,1 @@
+import{j as s}from"./index-B4UlbelX.js";import{H as r,c as e}from"./Footer-CjjlDo4u.js";const a=()=>s.jsxs("div",{children:[s.jsx(r,{}),s.jsx("div",{className:"w-full h-screen"}),s.jsx(e,{})]});export{a as default};

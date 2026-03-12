@@ -53,6 +53,7 @@ const Images = () => {
         formData
       );
 
+      console.log(response)
       if (response.status === 200) {
         alert("Images uploaded successfully!");
         setFiles([]);

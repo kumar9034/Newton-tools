@@ -1,60 +1,79 @@
 import SliderModel from "../models/Sildermodel.js";
 
+class SliderImage {
+  static async postSliderImage(req, res) {
+    try {
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ message: "No images uploaded ❌" });
+      }
 
+      const folderName = req.body.name || "slider";
 
-class SliderImage{
-    static async postSilderimage(req, res){
-        try {
+      // Map files to DB format
+      const images = req.files.map(file => ({
+        folder_name: folderName,
+        image_path: file.location, // <-- AWS URL
+      }));
 
-            if (!req.files || req.files.length === 0) {
-                return res.status(400).json({ message: "No images uploaded" });
-            }
+      // ✅ Save to MySQL using your model
+      const savedImages = await SliderModel.saveMultipleImages(images);
 
-            const folderName =  "sliderimage";
+      res.status(200).json({
+        message: "Images uploaded successfully ✅",
+        savedImages, // contains AWS URLs + DB IDs
+      });
 
-            // 🔥 Sab files ka full path banao
-            const images = req.files.map(file => ({
-                folder_name: folderName,
-                image_path: `/uploads/${folderName}/${file.filename}`
-            }));
+    } catch (error) {
+      console.error("Upload error:", error);
+      res.status(500).json({ error: error.message || "Internal server error ❌" });
+    }
+  }
 
-            // ✅ Model ko Promise based call karo
-            const imagePaths = images.map((image) => image.image_path);
-            const result = await SliderModel.saveSliderImage(imagePaths);
+  static async getSliderimage(req, res) {
+    try {
+      const sliders = await SliderModel.getAllSliderImages();
 
-            res.json({
-                message: "Images uploaded successfully ✅",
-            });
+      res.status(200).json({
+        success: true,
+        data: sliders
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
 
-        } catch (error) {
+    static deleteslideriamge = async (req, res) => {
 
-            console.error(error);
+  const { id } = req.body;
 
-            res.status(500).json({
-                error: error.message
-            });
-        }
+  if (!id || id.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "No IDs provided"
+    });
+  }
+
+  SliderModel.deleteDocuments(id, (error, result) => {
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        error: error
+      });
     }
 
-    static async getSliderimage(req, res){
-        
-    try {
-
-    const sliders = await SliderModel.getAllSliderImages();
-
-    res.status(200).json({
+    res.json({
       success: true,
-      data: sliders
+      message: "Documents deleted successfully",
+      deleted: result.affectedRows
     });
 
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-  }
+  });
 
-
+};
 }
-export default SliderImage
+
+export default SliderImage;

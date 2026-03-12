@@ -9,7 +9,11 @@ router.post("/upload", upload.single("pdf"), DocumentController.DocumentControll
 router.post("/upload-images", uploadimage.array("images", 10), DocumentController.imagescontroller.uploadImages);
 
 router.get("/latest", DocumentController.PDFgetcontroller.getLatest);
+router.get("/allpdf", DocumentController.PDFgetcontroller.getAllDocuments);
 router.get("/images", DocumentController.imagescontroller.getAllImages)
+
+
+router.post("/deletepdf", DocumentController.PDFgetcontroller.deleteDocuments)
 
 
 export default router;
