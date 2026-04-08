@@ -1,19 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import HTMLFlipBook from "react-pageflip";
+import HTMLFlipBook from "react-pageflip"; 
 import {
   FaChevronLeft,
   FaChevronRight,
   FaDownload,
 } from "react-icons/fa";
-import axios from "axios";
+  import axios from "axios";
 
-import worker from "react-pdf/node_modules/pdfjs-dist/build/pdf.worker.min.mjs?url";
+pdfjs.GlobalWorkerOptions.workerSrc =
+  `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
+import "react-pdf/dist/Page/TextLayer.css"; 
 
-pdfjs.GlobalWorkerOptions.workerSrc = worker;
 
 /* ❄️ Optimized Snow */
 const Snow = () => {
@@ -42,7 +42,7 @@ const FlyerViewer = () => {
   const [pdfurl, setPdfUrl] = useState();
   const [numPages, setNumPages] = useState(null);
   const [zoom, setZoom] = useState(1);
-  const [size, setSize] = useState({ width: 300, height: 500 });
+  const [size, setSize] = useState({ width: 250, height: 600 });
 
   /* 📐 Responsive Size */
   useEffect(() => {
@@ -65,14 +65,16 @@ const FlyerViewer = () => {
           `${import.meta.env.VITE_API_URL}/api/documents/latest`
         );
         setPdfUrl(res.data.pdf);
-      
+        console.log(res.data)
+        console.log(pdfurl)
+
       } catch (err) {
         console.error("PDF fetch error:", err);
       }
     };
 
     fetchPdf();
-  }, [setPdfUrl]);
+  }, []);
 
   const nextPage = () => bookRef.current?.pageFlip().flipNext();
   const prevPage = () => bookRef.current?.pageFlip().flipPrev();
@@ -117,13 +119,13 @@ const FlyerViewer = () => {
               <FaChevronLeft />
             </button>
 
-            <div className="rounded-lg shadow-2xl bg-white sm:w-[25vw] w-[70vw] h-[77vh] overflow-hidden px-5">
+            <div className="rounded-lg shadow-2xl bg-white sm:w-auto  h-auto overflow-hidden px-5">
               <Document
-                file={{
-                  url: pdfurl
-                }}
+                file={pdfurl}
                 onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                onLoadError={(err) => console.error("PDF ERROR 👉", err)}
                 loading={<p>Loading PDF...</p>}
+                error={<p>Failed to load PDF 😢</p>}
               >
                 {numPages && (
                   <HTMLFlipBook

@@ -3,33 +3,46 @@ import ImageModel from "../models/imageModel.js";
 import path from "path"
 
 import { fileURLToPath } from "url";
+import { sendPdfEmail } from "../config/Emailsystem.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 class DocumentController {
 
-    static upload(req, res) {
-        const { name } = req.body;
+  static upload(req, res) {
+    const { name, email } = req.body;   // 👈 email add kiya
+    const pdf = `${process.env.CDN_URL}/${req.file.key}`;     // S3 file URL
 
-        const pdf = req.file?.location;   // S3 file URL
-
-        if (!pdf) {
-            return res.status(400).json({ message: "PDF is required ❌" });
-        }
-
-        DocumentModel.uploadDocument({ name, pdf }, (err, result) => {
-            if (err) {
-                return res.status(500).json({ error: err });
-            }
-
-            res.status(200).json({
-                message: "PDF uploaded successfully ✅",
-                url: pdf
-            });
-        });
+    if (!pdf) {
+      return res.status(400).json({ message: "PDF is required ❌" });
     }
 
+    // 1️⃣ Save in MySQL
+    DocumentModel.uploadDocument({ name, pdf }, async (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err });
+      }
 
+      try {
+        // 2️⃣ Send Email after upload
+          await sendPdfEmail(  pdf);
+        // console.log(email) 
+        
+        // 3️⃣ Final response
+        res.status(200).json({
+          message: "PDF uploaded + Email sent ✅",
+          url: pdf
+        });
+
+      } catch (emailError) {
+        res.status(200).json({
+          message: "PDF uploaded but Email failed ⚠️",
+          url: pdf,
+          emailError
+        });
+      }
+    });
+  }
 
 }
 
@@ -174,6 +187,29 @@ class imagescontroller {
 
         }
 
+
+    }
+    static async deleteImages(req, res){
+      const { id } = req.body;
+      if (!id || id.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "No IDs provided"
+        });
+      }
+      ImageModel.deleteImages(id, (error, result) => {
+        if (error) {
+          return res.status(500).json({
+            success: false,
+            error: error
+          });
+        }
+        res.json({
+          success: true,
+          message: "Images deleted successfully",
+          deleted: result.affectedRows
+        });
+      });
 
     }
 }

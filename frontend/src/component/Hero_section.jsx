@@ -123,6 +123,8 @@ const Hero_section = () => {
   return (
     <>
       {/* ================= BRAND SHOWCASE ================= */}
+      <div className="h-auto w-full">
+
       <Cardsbrands/>
 
       {/* ================= OTHER SECTIONS ================= */}
@@ -131,6 +133,7 @@ const Hero_section = () => {
       <Category />
       <Section5 />
 
+      </div>
       {/* ================= MARQUEE ================= */}
       <section className="bg-white py-16 px-0 overflow-hidden">
         <div className="flex flex-col md:flex-row justify-between mb-10 gap-6 px-5">

@@ -39,6 +39,11 @@ class ImageModel {
   });
 }
 
+static deleteImages(ids, callback) {
+  const sql = "DELETE FROM images WHERE id IN (?)";
+  db.query(sql, [ids], callback);
+}
+
 }
 
 export default ImageModel;

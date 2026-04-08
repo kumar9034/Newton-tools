@@ -12,7 +12,7 @@ router.get("/latest", DocumentController.PDFgetcontroller.getLatest);
 router.get("/allpdf", DocumentController.PDFgetcontroller.getAllDocuments);
 router.get("/images", DocumentController.imagescontroller.getAllImages)
 
-
+router.post("/images/delete", DocumentController.imagescontroller.deleteImages)
 router.post("/deletepdf", DocumentController.PDFgetcontroller.deleteDocuments)
 
 

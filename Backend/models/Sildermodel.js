@@ -25,12 +25,20 @@ class SliderModel {
   }
 
    static deleteDocuments(ids, callback) {
-  
-      const sql = "DELETE FROM documents WHERE id IN (?)";
-  
-      db.query(sql, [ids], callback);
-  
-    }
+
+  // Convert string IDs → number IDs
+  const numericIds = ids.map(id => Number(id));
+
+  console.log("Deleting IDs:", numericIds);
+
+  // FINAL WORKING SQL
+  const sql = `DELETE FROM slider_images WHERE id IN (${numericIds.join(",")})`;
+
+  db.query(sql, (err, result) => {
+    if (err) return callback(err, null);
+    callback(null, result);
+  });
+}
 }
 
 export default SliderModel;

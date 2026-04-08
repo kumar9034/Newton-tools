@@ -21,6 +21,7 @@
     "multer-s3": "^3.0.1",
     "mysql-server": "^1.0.5",
     "mysql2": "^3.17.4",
+    "nodemailer": "^8.0.4",
     "pdf-poppler": "^0.2.3"
   }
 }

@@ -70,6 +70,7 @@ const Adminboard = () => {
           }
         }
       );
+      console.log(res.data)
 
       if (res.status === 200) {
         alert("PDF Uploaded");
@@ -153,7 +154,7 @@ const Adminboard = () => {
 
     await axios.post(
       `${import.meta.env.VITE_API_URL}/api/documents/deletepdf`,
-      { ids: selectedPdfs }
+      { id: selectedPdfs }
     );
 
     setPdfs(pdfs.filter(pdf => !selectedPdfs.includes(pdf.id)));
@@ -170,8 +171,8 @@ const Adminboard = () => {
     }
 
     await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/documents/deleteimages`,
-      { ids: selectedImages }
+      `${import.meta.env.VITE_API_URL}/api/documents/images/delete`,
+      { id : selectedImages }
     );
 
     setImages(images.filter(img => !selectedImages.includes(img.id)));
@@ -187,11 +188,13 @@ const Adminboard = () => {
       return;
     }
 
-    await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/documents/deletesliderimage`,
-      { ids: selectedSliders }
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/deleteimageslider`,
+      {
+        id: selectedSliders   // ⭐ direct bhejo
+      }
     );
-
+    console.log(res.data)
     setSliderImages(
       sliderImages.filter(img => !selectedSliders.includes(img.id))
     );
@@ -260,8 +263,8 @@ const Adminboard = () => {
                   }
                 />
                 <div className=" w-full flex justify-between ">
-                <span>{pdf.pdf}</span>
-                <span>{new Date(pdf.created_at).toLocaleDateString()}</span>
+                  <span>{pdf.pdf}</span>
+                  <span>{new Date(pdf.created_at).toLocaleDateString()}</span>
                 </div>
 
               </div>
@@ -286,18 +289,18 @@ const Adminboard = () => {
                 <div key={img.id} className="">
                   <div className=" flex flex-wrap  justify-between w-full ">
 
-                  <input
-                    type="checkbox"
-                    // className="absolute top-2 left-2"
-                    checked={selectedImages.includes(img.id)}
-                    onChange={() =>
-                      toggleSelect(img.id, selectedImages, setSelectedImages)
-                    }
-                  />
-                  <div className="w-[97%] flex  gap-5 ">
-                  <span className="line-clamp-[1] ">{img.folder_path}</span>
-                  <span>{ new Date(img.created_at).toLocaleDateString()}</span>
-                  </div>
+                    <input
+                      type="checkbox"
+                      // className="absolute top-2 left-2"
+                      checked={selectedImages.includes(img.id)}
+                      onChange={() =>
+                        toggleSelect(img.id, selectedImages, setSelectedImages)
+                      }
+                    />
+                    <div className="w-[97%] flex  gap-5 ">
+                      <span className="line-clamp-[1] ">{img.folder_path}</span>
+                      <span>{new Date(img.created_at).toLocaleDateString()}</span>
+                    </div>
                   </div>
 
                 </div>
@@ -327,9 +330,9 @@ const Adminboard = () => {
                   onChange={() =>
                     toggleSelect(img.id, selectedSliders, setSelectedSliders)
                   }
-                  />
+                />
                 <span className="line-clamp-[1] w-[95%]">{img.image_path}</span>
-                  <span>{ new Date(img.created_at).toLocaleDateString()}</span>
+                <span>{new Date(img.created_at).toLocaleDateString()}</span>
 
               </div>
 

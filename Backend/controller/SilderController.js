@@ -45,34 +45,42 @@ class SliderImage {
     }
   }
 
-    static deleteslideriamge = async (req, res) => {
+  // controller/SliderController.js
 
-  const { id } = req.body;
+static deleteslideriamge = async (req, res) => {
+  try {
+    console.log("BODY RECEIVED:", req.body);
 
-  if (!id || id.length === 0) {
-    return res.status(400).json({
-      success: false,
-      message: "No IDs provided"
-    });
-  }
+    const { id } = req.body;
 
-  SliderModel.deleteDocuments(id, (error, result) => {
-
-    if (error) {
-      return res.status(500).json({
+    // validation
+    if (!id || !Array.isArray(id) || id.length === 0) {
+      return res.status(400).json({
         success: false,
-        error: error
+        message: "No IDs provided"
       });
     }
 
-    res.json({
-      success: true,
-      message: "Documents deleted successfully",
-      deleted: result.affectedRows
+    SliderModel.deleteDocuments(id, (error, result) => {
+      if (error) {
+        console.log("DB ERROR:", error);
+        return res.status(500).json({
+          success: false,
+          error: error
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Documents deleted successfully",
+        deletedRows: result.affectedRows
+      });
     });
 
-  });
-
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success:false, message:"Server error"});
+  }
 };
 }
 
