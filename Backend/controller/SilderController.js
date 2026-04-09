@@ -2,33 +2,43 @@ import SliderModel from "../models/Sildermodel.js";
 
 class SliderImage {
   static async postSliderImage(req, res) {
-    try {
-      if (!req.files || req.files.length === 0) {
-        return res.status(400).json({ message: "No images uploaded ❌" });
-      }
-
-      const folderName = req.body.name || "slider";
-
-      // Map files to DB format
-      const images = req.files.map(file => ({
-        folder_name: folderName,
-        image_path: file.location, // <-- AWS URL
-      }));
-
-      // ✅ Save to MySQL using your model
-      const savedImages = await SliderModel.saveMultipleImages(images);
-
-      res.status(200).json({
-        message: "Images uploaded successfully ✅",
-        savedImages, // contains AWS URLs + DB IDs
-      });
-
-    } catch (error) {
-      console.error("Upload error:", error);
-      res.status(500).json({ error: error.message || "Internal server error ❌" });
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "No images uploaded ❌" });
     }
-  }
 
+    const folderName = req.body.name || "slider";
+
+    // ⚠️ Important: title & desc arrays me aayenge from frontend
+    const titles = Array.isArray(req.body.title)
+      ? req.body.title
+      : [req.body.title];
+
+    const descs = Array.isArray(req.body.desc)
+      ? req.body.desc
+      : [req.body.desc];
+
+    // Map files to DB format
+    const images = req.files.map((file, index) => ({
+      folder_name: folderName,
+      image_path: file.location, // AWS URL
+      title: titles[index] || "",
+      desc: descs[index] || ""
+    }));
+
+    // Save to MySQL
+    const savedImages = await SliderModel.saveMultipleImages(images);
+
+    res.status(200).json({
+      message: "Slider uploaded successfully ✅",
+      savedImages,
+    });
+
+  } catch (error) {
+    console.error("Upload error:", error);
+    res.status(500).json({ error: error.message || "Internal server error ❌" });
+  }
+}
   static async getSliderimage(req, res) {
     try {
       const sliders = await SliderModel.getAllSliderImages();

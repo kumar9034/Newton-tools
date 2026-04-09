@@ -16,7 +16,7 @@ const s3 = new S3Client({
 const uploadimage = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "newtontools-images-123",
+    bucket: "newton-tool",
     contentType: multerS3.AUTO_CONTENT_TYPE,
 
     key: function (req, file, cb) {
