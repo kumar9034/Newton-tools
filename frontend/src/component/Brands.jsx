@@ -39,6 +39,7 @@ const Brands = () => {
     { brand: "iform-logo.png"},
     { brand: "jbweld-logo.webp"},
     { brand: "irwin-logo-1.webp"},
+    { brand: "website_logo_header.png"},
     { brand: "krylon-logo.png"},
     { brand: "kunys_logo.gif"},
     { brand: "LX_Logo-With-Tagline_Updated.png"},
@@ -50,7 +51,7 @@ const Brands = () => {
     { brand: "mechtools-logo.avif"},
     { brand: "metabo-logo.png"},
     { brand: "metabo-logo-1.avif"},
-    { brand: "milwaukee-logo.png"},
+    { brand: "milwaukee-electric-tool-logo-png_seeklogo-178086.png"},
     { brand: "mq-logo.jpg"},
     { brand: "norske-logo.jpg"},
     { brand: "olfa-logo.avif"},
@@ -78,6 +79,7 @@ const Brands = () => {
     { brand: "Tuck-logo.webp"},
     { brand: "turnx-logo.webp"},
     { brand: "viking-log.jpg"},
+    { brand: "viking-logo.webp"},
     { brand: "Wallboard-logo.avif"},
     { brand: "wd-40-logo.png"},
     
@@ -89,8 +91,8 @@ const Brands = () => {
       <section className=" pt-27 py-24 px-4">
         {/* Brands Row */}
        <Cardsbrands/>
-      <div className='flex flex-wrap gap-4 px-5 justify-center items-center'>
-        {brands.map((items,id)=>( <div key={id} className='w-40 h-15 bg-orange-50 px-3 py-2 rounded-lg  '><img className='w-full h-full object-contain rounded-lg' src={items.brand} alt="" /></div>
+      <div className=' w-full flex flex-wrap sm:gap-4 gap-3 sm:px-5 px-2 justify-center items-center'>
+        {brands.map((items,id)=>( <div key={id} className='sm:w-40 w-30  h-15 bg-orange-50 px-3 py-2 rounded-lg  '><img className='w-full h-full object-contain rounded-lg' src={items.brand} alt="" /></div>
           
         ))}
         </div>

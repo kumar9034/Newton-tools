@@ -49,7 +49,7 @@ const Images = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/documents/upload-images`,
+        `/api/documents/upload-images`,
         formData
       );
 

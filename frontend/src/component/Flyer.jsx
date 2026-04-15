@@ -1,192 +1,166 @@
-import { useEffect, useRef, useState } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
-import HTMLFlipBook from "react-pageflip"; 
-import {
-  FaChevronLeft,
-  FaChevronRight,
-  FaDownload,
-} from "react-icons/fa";
-  import axios from "axios";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { Document, pdfjs } from "react-pdf";
+import HTMLFlipBook from "react-pageflip";
+import { motion, AnimatePresence } from "framer-motion";
+import { Download, ChevronLeft, ChevronRight, Loader2, Maximize2, Minimize2 } from "lucide-react";
+import axios from "axios";
 
-pdfjs.GlobalWorkerOptions.workerSrc =
-  `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css"; 
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 
-/* ❄️ Optimized Snow */
-const Snow = () => {
-  return (
-    <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
-      {Array.from({ length: 20 }).map((_, i) => (
-        <span
-          key={i}
-          className="snowflake"
-          style={{
-            left: `${Math.random() * 100}vw`,
-            fontSize: `${Math.random() * 6 + 6}px`,
-            animationDuration: `${Math.random() * 8 + 6}s`,
-            animationDelay: `${Math.random() * 8}s`,
-          }}
-        >
-          🍁
-        </span>
-      ))}
-    </div>
-  );
-};
+
 
 const FlyerViewer = () => {
   const bookRef = useRef();
-  const [pdfurl, setPdfUrl] = useState();
-  const [numPages, setNumPages] = useState(null);
-  const [zoom, setZoom] = useState(1);
-  const [size, setSize] = useState({ width: 250, height: 600 });
+  const [pdfurl, setPdfUrl] = useState(null);
+  const [pageImages, setPageImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [size, setSize] = useState({ width: 340, height: 480 });
+  
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
 
-  /* 📐 Responsive Size */
   useEffect(() => {
-    const resize = () => {
+    const updateSize = () => {
       const w = window.innerWidth;
-      if (w < 640) setSize({ width: 260, height: 360 });
-      else if (w < 1024) setSize({ width: 340, height: 440 });
-      else setSize({ width: 400, height: 500 });
+      let pageWidth = w < 640 ? 280 : w < 1024 ? 340 : 420;
+      setSize({ width: pageWidth, height: pageWidth * 1.414 });
     };
-    resize();
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
   }, []);
 
-  /* 📄 Fetch Latest PDF */
+  const convertPagesToImages = async (pdf) => {
+    setLoading(true);
+    const images = [];
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({ scale: 2.5 }); 
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      images.push(canvas.toDataURL("image/jpeg", 0.95));
+    }
+    setPageImages(images);
+    setLoading(false);
+  };
+
   useEffect(() => {
     const fetchPdf = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/documents/latest`
-        );
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/documents/latest`);
         setPdfUrl(res.data.pdf);
-        console.log(res.data)
-        console.log(pdfurl)
-
-      } catch (err) {
-        console.error("PDF fetch error:", err);
-      }
+      } catch (err) { console.error(err); }
     };
-
     fetchPdf();
   }, []);
 
-  const nextPage = () => bookRef.current?.pageFlip().flipNext();
-  const prevPage = () => bookRef.current?.pageFlip().flipPrev();
-
-  const downloadFlyer = () => {
-    if (!pdfurl) return alert("PDF not available");
-    const link = document.createElement("a");
-    link.href = pdfurl;
-    link.setAttribute("download", pdfurl.split("/").pop());
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleMouseMove = (e) => {
+    if (!isZoomed) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setMousePos({ x, y });
   };
 
   return (
-    <div className="relative md:h-[100vh] h-auto py-36 flex items-center justify-center overflow-hidden bg-gray-100">
-
-      <Snow />
-
-      <div className="relative z-10 flex flex-col items-center w-full">
-
-        {/* HEADER */}
-        <div className="flex justify-between items-center w-full max-w-5xl px-8 ">
-          <h1 className="text-xl font-bold">Flyer Sale</h1>
-          <button
-            onClick={downloadFlyer}
-            className="text-black opacity-80 hover:opacity-100"
-          >
-            <FaDownload size={18} />
-          </button>
-        </div>
-
-        {/* PDF VIEWER */}
-        {pdfurl ? (
-          <div className="flex items-center gap-3">
-
-            <button
-              onClick={prevPage}
-              disabled={zoom > 1}
-              className="text-yellow-500 text-3xl opacity-70 hover:opacity-100"
-            >
-              <FaChevronLeft />
-            </button>
-
-            <div className="rounded-lg shadow-2xl bg-white sm:w-auto  h-auto overflow-hidden px-5">
-              <Document
-                file={pdfurl}
-                onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                onLoadError={(err) => console.error("PDF ERROR 👉", err)}
-                loading={<p>Loading PDF...</p>}
-                error={<p>Failed to load PDF 😢</p>}
-              >
-                {numPages && (
-                  <HTMLFlipBook
-                    ref={bookRef}
-                    width={size.width}
-                    height={size.height}
-                    showCover
-                    drawShadow
-                    flippingTime={800}
-                    disableFlipByClick={zoom > 1}
-                  >
-                    {Array.from({ length: numPages }, (_, index) => (
-                      <div
-                        key={index}
-                        className="flex justify-center items-center bg-white"
-                      >
-                        <Page
-                          pageNumber={index + 1}
-                          width={size.width}
-                          scale={zoom}
-                          renderTextLayer={false}
-                          renderAnnotationLayer={false}
-                        />
-                      </div>
-                    ))}
-                  </HTMLFlipBook>
-                )}
-              </Document>
-            </div>
-
-            <button
-              onClick={nextPage}
-              disabled={zoom > 1}
-              className="text-yellow-500 text-3xl opacity-70 hover:opacity-100"
-            >
-              <FaChevronRight />
-            </button>
-
+    <div className="sm:min-h-screen h-auto bg-[#050505] text-white flex flex-col items-center p-4 md:p-8 font-sans overflow-hidden">
+      
+      {/* 🛠️ COMPACT HEADER */}
+      <header className="w-full max-w-5xl sm:mb-12 mb-5 flex justify-between items-center bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md ">
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-lg ${isZoomed ? 'bg-yellow-400 text-black' : 'bg-white/5'}`}>
+            <Maximize2 size={18} />
           </div>
-        ) : (
-          <p className="text-gray-600">Loading flyer...</p>
-        )}
-
-        {/* ZOOM */}
-        <div className="mt-6 w-64 mb-5">
-          <input
-            type="range"
-            min="1"
-            max="2"
-            step="0.1"
-            value={zoom}
-            onChange={(e) => setZoom(parseFloat(e.target.value))}
-            className="w-full cursor-pointer"
-          />
-          <p className="text-xs text-center mt-1">{zoom.toFixed(1)}x</p>
+          <h1 className="text-sm font-bold tracking-[0.2em] uppercase italic">Flyer </h1>
         </div>
+        <button onClick={() => window.open(pdfurl)} className="bg-yellow-400 text-black px-5 py-2 rounded-full font-bold text-xs transition-transform active:scale-95 cursor-pointer shadow-[0_0_15px_rgba(250,204,21,0.3)]">
+          PDF SAVE
+        </button>
+      </header>
 
-      </div>
+      {/* 📖 FLYER STAGE WITH INTEGRATED BUTTONS */}
+      <main className="relative  flex-1 flex items-center justify-center w-full">
+        
+        {/* 📚 FLYER WRAPPER */}
+        <div className="relative group p-4">
+          
+          {loading && (
+            <div className="flex flex-col items-center gap-4">
+              <Loader2 className="animate-spin text-yellow-400" size={32} />
+              <p className="text-[10px] tracking-widest text-gray-500 uppercase">System Rendering...</p>
+            </div>
+          )}
+
+          {pdfurl && <Document file={pdfurl} onLoadSuccess={convertPagesToImages} className="hidden" />}
+
+          {/* ⬅️ PREV BUTTON (Edge Attached) */}
+          {!isZoomed && !loading && (
+            <button 
+              onClick={() => bookRef.current.pageFlip().flipPrev()}
+              className="absolute sm:left-[-20px] left-[-10] top-1/2 -translate-y-1/2 z-10 p-4 rounded-full bg-white text-black hover:bg-yellow-400 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)] active:scale-90"
+            >
+              <ChevronLeft size={24} strokeWidth={3} />
+            </button>
+          )}
+
+          {pageImages.length > 0 && (
+            <div className="shadow-[0_60px_100px_-20px_rgba(0,0,0,1)] rounded-sm overflow-hidden border sm:w-auto w-90 border-white/5">
+              <HTMLFlipBook 
+                width={size.width} 
+                height={size.height} 
+                showCover={true} 
+                ref={bookRef}
+                useMouseEvents={false}
+                clickEventForward={false}
+                className="mx-auto"
+              >
+                {pageImages.map((img, i) => (
+                  <div 
+                    key={i} 
+                    className="bg-white relative overflow-hidden select-none cursor-crosshair"
+                    onDoubleClick={() => setIsZoomed(!isZoomed)}
+                    onMouseMove={handleMouseMove}
+                  >
+                    <motion.img 
+                      src={img} 
+                      alt="page" 
+                      className="w-full h-full object-cover shadow-inner"
+                      animate={{ 
+                        scale: isZoomed ? 2.5 : 1,
+                        x: isZoomed ? `${(50 - mousePos.x) * 0.4}%` : 0,
+                        y: isZoomed ? `${(50 - mousePos.y) * 0.4}%` : 0
+                      }}
+                      style={{ transformOrigin: `${mousePos.x}% ${mousePos.y}%` }}
+                      transition={{ type: "tween", ease: "easeOut", duration: 0.2 }}
+                    />
+                  </div>
+                ))}
+              </HTMLFlipBook>
+            </div>
+          )}
+
+          {/* ➡️ NEXT BUTTON (Edge Attached) */}
+          {!isZoomed && !loading && (
+            <button 
+              onClick={() => bookRef.current.pageFlip().flipNext()}
+              className="absolute sm:right-[-20px] right-[15px] top-1/2 -translate-y-1/2 z-[10] p-4 rounded-full bg-white text-black hover:bg-yellow-400 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)] active:scale-90"
+            >
+              <ChevronRight size={24} strokeWidth={3} />
+            </button>
+          )}
+
+        </div>
+      </main>
+
+      <footer className="mt-auto py-6 text-white/15 text-[10px] tracking-[0.8em] font-gray-600 uppercase">
+        Newton-tool Flyer
+      </footer>
     </div>
   );
 };
 
 export default FlyerViewer;
-

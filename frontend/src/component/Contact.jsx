@@ -70,7 +70,7 @@ const Contact = () => {
                          <FaPhoneAlt className="mt-1" />
                          <span>(604) 503-3632</span>
                        </a>
-            <p className="flex gap-2"><MdEmail className="mt-2" size={20} /> contactus@newtontool.ca</p>
+            <p className="flex gap-2"><MdEmail className="mt-2" size={20} />sales@newtontool.ca</p>
           </p>
 
 

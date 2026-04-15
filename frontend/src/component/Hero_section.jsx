@@ -179,63 +179,81 @@ const Hero_section = () => {
   
   {/* Heading */}
   <h1 className="flex flex-col gap-2 text-sm sm:text-base font-[600] max-w-4xl">
-    <span className="text-2xl sm:text-3xl md:text-4xl font-[700] leading-tight">
-      TOOLS THAT WORK AS HARD AS YOU DO
+   
+    <span className="text-lg sm:text-3xl md:text-4xl font-[700] leading-tight">
+      Subscribe to Our Flyer
     </span>
     <span className="text-sm sm:text-base">
       Tag <strong>#Newtontoolrepair</strong> and <strong>@Newtontool</strong> for a chance to be featured on socials.
     </span>
   </h1>
 
+  <div className="w-full max-w-3xl mt-8">
+    <form className="flex flex-col sm:flex-row gap-3">
+      
+      <input
+        type="text"
+        placeholder="First Name"
+        className="w-full px-4 py-3 rounded-md outline-none border-1 border-black/40 focus:border-black"
+      />
+
+      <input
+        type="text"
+        placeholder="Last Name"
+        className="w-full px-4 py-3 rounded-md outline-none border border-black/40 focus:border-black"
+      />
+
+      <input
+        type="email"
+        placeholder="Email Address"
+        className="w-full px-4 py-3 rounded-md outline-none border border-black/40 focus:border-black"
+      />
+
+    </form>
+      <div className="flex flex-col items-center mt-4 gap-5">
+        <div className="flex gap-2 w-full"> 
+          <input type="checkbox" name="" id="" />
+      <p className="text-md">Subscribing confirms that you have read our Privacy Policy
+and agree to the Terms of Service.</p>
+        </div>
+
+      <button
+        type="submit"
+        className="bg-black w-[40%]  text-white px-6 py-3 rounded-md font-semibold hover:scale-105 transition-transform"
+      >
+        Subscribe
+      </button>
+
+      </div>
+  </div>
+
   {/* Follow Us */}
-  <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-5 sm:mt-7">
+  <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8 sm:mt-10">
     <p className="font-[700] text-lg sm:text-xl">Follow Us:</p>
 
     <div className="flex gap-4 text-black">
-      <a
-        href="http://tiktok.com/%40newton.tool"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hover:scale-110 transition-transform"
-      >
+      <a href="http://tiktok.com/%40newton.tool" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
         <AiFillTikTok size={32} />
       </a>
 
-      <a
-        href="https://www.instagram.com/newtontoolrepair/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hover:scale-110 transition-transform"
-      >
+      <a href="https://www.instagram.com/newtontoolrepair/" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
         <RiInstagramFill size={32} />
       </a>
 
-      <a
-        href="https://www.facebook.com/newtontoolrepairs/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hover:scale-110 transition-transform"
-      >
+      <a href="https://www.facebook.com/newtontoolrepairs/" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
         <FaFacebookSquare size={32} />
       </a>
 
-      <a
-        href="#"
-        className="hover:scale-110 transition-transform"
-      >
+      <a href="#" className="hover:scale-110 transition-transform">
         <FaLinkedin size={32} />
       </a>
 
-      <a
-        href="https://wa.me/16045033632"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hover:scale-110 transition-transform "
-      >
+      <a href="https://wa.me/16045033632" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
         <IoLogoWhatsapp size={32} />
       </a>
     </div>
   </div>
+  {/* SUBSCRIBE FORM */}
 
 </section>
 

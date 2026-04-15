@@ -1,53 +1,53 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-// const slides = [
-//   {
-//     title: "Professional Tools",
-//     desc: "Our professional tools are designed to meet the highest standards of quality, strength, and precision.",
-//     image: "ChatGPT Image Jan 23, 2026, 12_45_06 PM.png"
-//   },
-//   {
-//     title: "Trusted Performance",
-//     desc: "Engineered to deliver trusted performance using high-quality materials and durability testing.",
-//     image: "slider-2.png"
-//   },
-//   {
-//     title: "Fast & Reliable",
-//     desc: "Built to deliver fast performance and reliable results for professional and everyday use.",
-//     image: "Bosch-banner_new_revised.jpg"
-//   }
-// ];
-
 export default function Slider() {
   const [current, setCurrent] = useState(0);
-  const [slides, setslider ] = useState([])
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
 
- useEffect(() => {
-  if (slides.length === 0) return;
+  /* 🚀 Fetch slider images ONCE */
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get("/api/allimageslider");
+        setSlides(res?.data?.data || []);
+      } catch (err) {
+        console.error("Slider API Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const interval = setInterval(() => {
-    setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-  }, 4000);
+    fetchData();
+  }, []); // ❌ slides dependency removed (IMPORTANT)
 
-  return () => clearInterval(interval);
+  /* 🎬 Auto slide */
+  useEffect(() => {
+    if (slides.length === 0) return;
 
-}, [slides.length]);
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+    }, 4000);
 
-  useEffect(()=>{
-    const fatchdata  = async()=>{
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/allimageslider`)
-      setslider(res.data.data)
-      // console.log(slides)
+    return () => clearInterval(interval);
+  }, [slides.length]);
 
-    }
-    fatchdata()
-  },[slides])
+  /* ⏳ Loading state */
+  if (loading) {
+    return (
+      <div className="h-[250px] flex items-center justify-center">
+        <p>Loading slider...</p>
+      </div>
+    );
+  }
 
-
+  /* ❌ No slides fallback */
+  if (slides.length === 0) return null;
 
   return (
     <div className="relative w-full overflow-hidden">
+      
       {/* Slides */}
       <div
         className="flex transition-transform duration-700 ease-in-out"
@@ -58,11 +58,14 @@ export default function Slider() {
             key={index}
             className="min-w-full h-[220px] sm:h-[300px] md:h-[400px] lg:h-[250px] relative"
           >
-            {/* Image */}
             <img
               src={slide.image_path}
-              alt={slide.title}
+              alt={slide.title || "slide"}
               className="w-full h-full object-cover"
+              onError={(e) =>
+                (e.target.src =
+                  "https://dummyimage.com/1200x400/cccccc/000000&text=Image+Not+Found")
+              }
             />
 
             {/* Overlay */}
@@ -80,7 +83,7 @@ export default function Slider() {
         ))}
       </div>
 
-      {/* Controls */}
+      {/* 👉 Next */}
       <button
         onClick={() =>
           setCurrent(current === slides.length - 1 ? 0 : current + 1)
@@ -90,6 +93,7 @@ export default function Slider() {
         →
       </button>
 
+      {/* 👉 Prev */}
       <button
         onClick={() =>
           setCurrent(current === 0 ? slides.length - 1 : current - 1)

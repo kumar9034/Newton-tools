@@ -143,7 +143,7 @@ const Service = () => {
                 onMouseEnter={() => changeBrand(i)}
                 onClick={() => changeBrand(i)}
                 style={{ backgroundColor: brand.color }}
-                className={`
+                className={`w-[45%] sm:w-[15%]
         cursor-pointer p-4 rounded-2xl transition-all duration-300
         ${activeIndex === i ? "scale-110 shadow-2xl" : "hover:scale-105"}
       `}
@@ -170,7 +170,7 @@ const Service = () => {
             {brands.map((brand, index) => (
               <div
                 key={index}
-                className=" w-40 h-auto py-2 px-2  rounded-lg bg-gray-400"
+                className=" sm:w-40 w-[45%] h-auto py-2 px-2  rounded-lg bg-gray-400"
               >
                 {<img className='w-full h-10 object-contain ' src={brand.brand} alt="" />}
               </div>

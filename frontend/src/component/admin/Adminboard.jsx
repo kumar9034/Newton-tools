@@ -62,7 +62,7 @@ const Adminboard = () => {
     try {
 
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/documents/upload`,
+        `/api/documents/upload`,
         formData,
         {
           headers: {
@@ -87,7 +87,7 @@ const Adminboard = () => {
   // FETCH PDF
   const fetchPdfs = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/documents/allpdf`);
+      const res = await axios.get(`/api/documents/allpdf`);
 
       if (Array.isArray(res.data)) {
         setPdfs(res.data);
@@ -104,7 +104,7 @@ const Adminboard = () => {
   const fetchImages = async () => {
     try {
 
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/documents/images`);
+      const res = await axios.get(`/api/documents/images`);
 
       if (Array.isArray(res.data.images)) {
         setImages(res.data.images);
@@ -122,7 +122,7 @@ const Adminboard = () => {
 
     try {
 
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/allimageslider`);
+      const res = await axios.get(`/api/allimageslider`);
 
       console.log("slider response:", res.data.data);
 
@@ -153,7 +153,7 @@ const Adminboard = () => {
     }
 
     await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/documents/deletepdf`,
+      `/api/documents/deletepdf`,
       { id: selectedPdfs }
     );
 
@@ -171,7 +171,7 @@ const Adminboard = () => {
     }
 
     await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/documents/images/delete`,
+      `/api/documents/images/delete`,
       { id : selectedImages }
     );
 
@@ -189,7 +189,7 @@ const Adminboard = () => {
     }
 
     const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/deleteimageslider`,
+      `/api/deleteimageslider`,
       {
         id: selectedSliders   // ⭐ direct bhejo
       }

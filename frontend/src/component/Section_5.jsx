@@ -147,7 +147,7 @@ const Section5 = () => {
             ref={badgeRef}
             className="absolute -left-6 bottom-10 bg-yellow-600 text-white rounded-xl px-6 py-5 shadow-xl"
           >
-            <h3 className="text-3xl font-extrabold leading-none">15+</h3>
+            <h3 className="text-3xl font-extrabold leading-none">13+</h3>
             <p className="text-xs font-hero uppercase tracking-widest mt-1">
               Years of Trust
             </p>

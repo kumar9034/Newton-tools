@@ -4,10 +4,16 @@ import gsap from "gsap";
 const services = [
   { title: "dewalt-white-logo.webp", img: "OIP-removebg-preview.png", color: "#fdc131" },
   { title: "Makita_logo.png", img: "download-removebg-preview.png", color: "#0493ab" },
-  { title: "atlas-home-brand-metabohpt.webp", img: "metabo.png", color: "#018058" },
+  { title: "atlas-home-brand-metabohpt.webp", img: "slazzer-preview-kgf6z.png", color: "#018058" },
   { title: "Bosch-Logo-2002-2018.png", img: "boschtools-removebg-preview.png", color: "#1b4c5d" },
-  { title: "paslode (1).webp", img: "Paslodetools.webp", color: "#ef5423" },
+  { title: "paslode (1).webp", img: "Paslode.webp", color: "#ef5423" },
   { title: "rolair-logo-436w.png", img: "Roleair-1-removebg-preview.png", color: "#1a720b" },
+  { title: "portercable-logo.png", img: "slazzer-preview-bqvf0.png", color: "#cf152d" },
+  { title: "bn-logo.png", img: "BNT-40X-Main-A-420x420-Photoroom.png", color: "#ff8043" },
+  { title: "atlas-home-brand-ego.webp", img: "ego.webp", color: "rgb(167, 248, 54)" },
+  { title: "iq-logo.avif", img: "slazzer-preview-fbb7j.png", color: "#e35b1b" },
+  { title: "logo-flex.png", img: "slazzer-preview-0n7bh.png", color: "rgb(201, 17, 17)" },
+  { title: "skil-logo.svg", img: "slazzer-preview-a2y3j.png", color: "rgb(232, 57, 57)" },
 ];
 
 const AuthorizedServiceMarquee = () => {

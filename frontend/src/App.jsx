@@ -1,5 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
+import Protective from "./component/Protective";
+import Scrolltotop from "./component/Scrolltotop";
 
 // Lazy Loaded Components
 const Home = lazy(() => import("./component/Home"));
@@ -18,7 +20,8 @@ const Adminboard = lazy(() => import("./component/admin/Adminboard"));
 const App = () => {
   return (
     <div>
-      <Suspense fallback={<div style={{textAlign:"center", padding:"50px"}}>Loading...</div>}>
+      <Suspense fallback={<div style={{ textAlign: "center", padding: "50px" }}>Loading...</div>}>
+      <Scrolltotop/>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/exclusive_product" element={<Exclusive_product />} />
@@ -31,7 +34,15 @@ const App = () => {
           <Route path="/service" element={<Service />} />
           <Route path="/careers" element={<Careers />} />
           <Route path="/admin/login" element={<Login />} />
-          <Route path="/admin/dashboard" element={<Adminboard />} />
+          <Route
+            path="/admin/dashboard"
+            element={
+              <Protective>
+                <Adminboard />
+              </Protective>
+            }
+          />
+
         </Routes>
       </Suspense>
     </div>

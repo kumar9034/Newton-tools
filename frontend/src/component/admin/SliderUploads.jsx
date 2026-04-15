@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const SliderUploads = () => {
-    const [files, setFiles] = useState([]);
+
+  const [slides, setSlides] = useState([]);
   const [error, setError] = useState("");
 
-  const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB
+  const MAX_FILE_SIZE = 15 * 1024 * 1024;
   const MAX_FILES = 5;
 
+  // FILE SELECT
   const handleFileChange = (e) => {
     setError("");
-
     const selectedFiles = Array.from(e.target.files);
 
     if (selectedFiles.length > MAX_FILES) {
@@ -18,7 +19,8 @@ const SliderUploads = () => {
       return;
     }
 
-    // Validation
+    const newSlides = [];
+
     for (let file of selectedFiles) {
       if (!file.type.startsWith("image/")) {
         setError("Only image files are allowed");
@@ -29,47 +31,60 @@ const SliderUploads = () => {
         setError("Each file must be less than 15MB");
         return;
       }
+
+      newSlides.push({
+        file,
+        title: "",
+        desc: ""
+      });
     }
 
-    setFiles(selectedFiles);
-    console.log("Selected files:", selectedFiles);
+    setSlides(newSlides);
   };
 
+  // TITLE DESC CHANGE
+  const handleInputChange = (index, field, value) => {
+    const updated = [...slides];
+    updated[index][field] = value;
+    setSlides(updated);
+  };
+
+  // UPLOAD
   const handleUpload = async () => {
-    if (files.length === 0) {
+    if (slides.length === 0) {
       setError("Please select image files first");
       return;
     }
 
     const formData = new FormData();
 
-    files.forEach((file) => {
-      formData.append("image", file); // important
+    slides.forEach((slide) => {
+      formData.append("image", slide.file);
+      formData.append("title", slide.title);
+      formData.append("desc", slide.desc);
     });
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/slider`,
+        `/api/slider`,
         formData
       );
-      console.log(response)
+
       if (response.status === 200) {
         alert("Images uploaded successfully!");
-        setFiles([]);
+        setSlides([]);
         setError("");
-      } else {
-        setError("Failed to upload images");
       }
-
     } catch (err) {
       console.error(err);
       setError("Error uploading images");
     }
   };
+
   return (
     <div className="bg-white rounded-xl shadow p-6">
 
-      {/* Upload Section */}
+      {/* Upload Section (SAME) */}
       <div className="mb-8">
         <h3 className="font-semibold mb-3">Upload Silder-Images (Max 5)</h3>
 
@@ -87,12 +102,10 @@ const SliderUploads = () => {
           />
         </label>
 
-        {error && (
-          <p className="text-red-500 text-sm mt-3">{error}</p>
-        )}
+        {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
       </div>
 
-      {/* Preview Section */}
+      {/* Preview Section (UPGRADED) */}
       <div>
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-semibold">Images Preview</h3>
@@ -101,31 +114,49 @@ const SliderUploads = () => {
             onClick={handleUpload}
             className="bg-yellow-500 px-4 py-2 rounded font-semibold hover:bg-yellow-600"
           >
-            Upload silder-Images
+            Upload Slider Images
           </button>
         </div>
 
-        {files.length === 0 ? (
-          <p className="text-gray-400 text-sm">
-            No images selected yet
-          </p>
+        {slides.length === 0 ? (
+          <p className="text-gray-400 text-sm">No images selected yet</p>
         ) : (
           <div className="flex flex-wrap gap-4">
-            {files.map((file, index) => (
+            {slides.map((slide, index) => (
               <div
                 key={index}
-                className="border border-gray-200 rounded-lg p-3 bg-gray-50 w-40"
+                className="border border-gray-200 rounded-lg p-3 bg-gray-50 w-56"
               >
-                <div className="h-24 flex items-center justify-center bg-gray-300 rounded text-xs">
+                <div className="h-24 flex items-center justify-center bg-gray-300 rounded text-xs mb-2">
                   📷 Image
                 </div>
 
-                <p className="text-xs mt-2 truncate font-medium">
-                  {file.name}
+                <p className="text-xs truncate font-medium mb-2">
+                  {slide.file.name}
                 </p>
 
-                <p className="text-xs text-gray-500">
-                  {(file.size / (1024 * 1024)).toFixed(2)} MB
+                {/* NEW INPUTS */}
+                <input
+                  type="text"
+                  placeholder="Slider Title"
+                  value={slide.title}
+                  onChange={(e) =>
+                    handleInputChange(index, "title", e.target.value)
+                  }
+                  className="w-full border p-1 text-xs mb-2 rounded"
+                />
+
+                <textarea
+                  placeholder="Slider Description"
+                  value={slide.desc}
+                  onChange={(e) =>
+                    handleInputChange(index, "desc", e.target.value)
+                  }
+                  className="w-full border p-1 text-xs rounded"
+                />
+
+                <p className="text-xs text-gray-500 mt-1">
+                  {(slide.file.size / (1024 * 1024)).toFixed(2)} MB
                 </p>
               </div>
             ))}
@@ -133,8 +164,7 @@ const SliderUploads = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SliderUploads
-
+export default SliderUploads;

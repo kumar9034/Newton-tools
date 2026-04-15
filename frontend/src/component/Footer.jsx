@@ -3,13 +3,13 @@ import { FaPhoneAlt, FaMapMarkerAlt, FaEnvelope, FaClock } from "react-icons/fa"
 const Footer = () => {
   return (
     <footer className="bg-black text-white font-montserrat">
-      
+
       {/* Top Yellow Bar */}
       <div className="h-3 bg-yellow-500"></div>
 
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-        
+
         {/* Brand */}
         <div>
           <img
@@ -20,7 +20,7 @@ const Footer = () => {
 
 
           <p className="mt-4 text-gray-300 leading-relaxed text-sm ">
-          Newton Tool serves the Lower Mainland community by providing industrial pneumatic and power tool repairs, fasteners, and related services. Since 2013, it has fulfilled contractors’, manufacturers’, and businesses’ requirements for tool repair and fastener needs, offering pneumatic tool repairs, power tool servicing, preventive maintenance, and authorized warranty work.
+            Newton Tool serves the Lower Mainland community by providing industrial pneumatic and power tool repairs, fasteners, and related services. Since 2013, it has fulfilled contractors’, manufacturers’, and businesses’ requirements for tool repair and fastener needs, offering pneumatic tool repairs, power tool servicing, preventive maintenance, and authorized warranty work.
           </p>
         </div>
 
@@ -69,11 +69,16 @@ const Footer = () => {
             </li>
             <li className="flex gap-3">
               <FaEnvelope className="text-yellow-500 mt-1" />
-              info@newtontool.com
+              sales@newtontool.ca
             </li>
-            <li className="flex gap-3">
-              <FaClock className="text-yellow-500 mt-1" />
-              Mon – Fri: 8:00 AM – 5:00 PM
+            <li className="flex flex-col gap-2">
+              <p>Monday: 7am – 7pm</p>
+              <p>Tuesday: 7am – 7pm</p>
+              <p>Wednesday: 7am – 7pm</p>
+              <p>Thursday: 7am – 7pm</p>
+              <p>Friday: 7am – 7pm</p>
+              <p>Saturday: 8am – 5pm</p>
+              <p>Sunday: Closed</p>
             </li>
           </ul>
         </div>
