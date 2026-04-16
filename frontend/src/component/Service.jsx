@@ -62,7 +62,7 @@ const Service = () => {
     {
       title: "Spare Parts",
       desc: "Genuine & compatible tool parts.",
-      image: "ChatGPT Image Apr 15, 2026, 04_25_25 PM.png",
+      image: "ChatGPTImageApr15202604_25_25P.jpeg",
     },
     {
       title: "Sharpening",
