@@ -46,7 +46,7 @@ export default function Slider() {
   if (slides.length === 0) return null;
 
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="relative w-full overflow-hidden mt-20">
       
       {/* Slides */}
       <div

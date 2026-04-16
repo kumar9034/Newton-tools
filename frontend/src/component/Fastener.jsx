@@ -12,49 +12,49 @@ const Cardsbrands = () => {
   const brands = [
     {
     name : "Coil Nails",
-    image : "ChatGPT Image Apr 16, 2026, 12_34_47 PM.png",
+    image : "ChatGPTImageApr16202612_34_47P-Photoroom.png",
     desc : "Coil nails are nails arranged in a coil for use in nail guns, enabling fast and efficient fastening in construction and woodworking.",
     color: "#e3b549" 
   },
     {
     name : "Stick Nails",
-    image : "ChatGPT Image Apr 16, 2026, 12_39_39 PM.png",
+    image : "ChatGPTImageApr16202612_39_39P (1)-Photoroom.png",
     desc : "Stick nails are nails arranged in a stick or strip for use in nail guns, providing convenience and efficiency in fastening applications.",
      color: "#a8ae06"
   },
     {
     name : "Bulk Nails",
-    image : "ChatGPT Image Apr 16, 2026, 01_02_33 PM.png",
+    image : "ChatGPTImageApr16202601_02_33P-Photoroom.png",
     desc : "Bulk nails are nails sold in large quantities for use in various fastening applications.",
     color: "#1b4c5d"
   },
     {
     name : "Screws",
-    image : "ChatGPT Image Apr 16, 2026, 12_57_34 PM.png",
+    image : "compressed_ChatGPT Image Apr 16, 2026, 12_57_34 PM.png",
     desc : "Screws are fasteners with helical threads for use in various applications.",
     color: "#c8a105" 
   },
     {
     name : "Staples",
-    image : "ChatGPT Image Apr 16, 2026, 12_41_23 PM.png",
+    image : "compressed_ChatGPT Image Apr 16, 2026, 12_41_23 PM.png",
     desc : "Staples are fasteners used in staplers for binding papers or other materials.",
     color: " #ce0909"
   },
     {
     name : "Finishing Nails",
-    image : "ChatGPT Image Apr 16, 2026, 12_42_48 PM-Photoroom.png",
+    image : "ChatGPTImageApr16202612_42_48PM-Photoroo-Photoroom.png",
     desc : "Finishing nails are small nails used for finishing work, typically hidden under the surface of the material.",
     color: "#5e4014"
   },
     {
     name : "Steel Strap",
-    image : "ChatGPT Image Apr 16, 2026, 12_54_55 PM.png",
+    image : "ChatGPTImageApr16202612_54_55P-Photoroom.png",
     desc : "Steel straps are used for reinforcing and securing materials in construction and industrial applications.",
     color: "#0a2e49"
   },
     {
     name : "Anchors ",
-    image : "ChatGPT Image Apr 16, 2026, 01_03_11 PM.png",
+    image : "ChatGPTImageApr16202601_03_11P-Photoroom.png",
     desc : "Anchors are hardware devices used to secure objects to walls, floors, or other structures.",
     color: "#1b4c5d"
   }
