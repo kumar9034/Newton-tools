@@ -13,7 +13,7 @@ const Footer = () => {
         {/* Brand */}
         <div>
           <img
-            src="WhatsApp_Image_2026-01-17_at_1.41.42_PM-removebg-preview.png"
+            src="WhatsApp_Image_2026-01-17_at_1.41.42_PM-removebg-preview (1).png"
             alt="Newton Tool"
             className="h-10"
           />

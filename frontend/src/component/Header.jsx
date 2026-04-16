@@ -125,7 +125,7 @@ const Header = () => {
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <img
-            src="/WhatsApp_Image_2026-01-17_at_1.41.42_PM-removebg-preview.png"
+            src="/WhatsApp_Image_2026-01-17_at_1.41.42_PM-removebg-preview (1).png"
             alt="Newton Tool"
             className="h-10 cursor-pointer"
             onClick={() => navigate("/")}

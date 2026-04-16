@@ -13,7 +13,7 @@ const services = [
   { title: "atlas-home-brand-ego.webp", img: "ego.webp", color: "rgb(167, 248, 54)" },
   { title: "iq-logo.avif", img: "slazzer-preview-fbb7j.png", color: "#e35b1b" },
   { title: "logo-flex.png", img: "slazzer-preview-0n7bh.png", color: "rgb(201, 17, 17)" },
-  { title: "skil-logo.svg", img: "slazzer-preview-a2y3j.png", color: "rgb(232, 57, 57)" },
+  { title: "skil-logo.svg", img: "WhatsApp Image 2026-04-15 at 5.17.54 PM-Photoroom.png", color: "rgb(232, 57, 57)" },
 ];
 
 const AuthorizedServiceMarquee = () => {
