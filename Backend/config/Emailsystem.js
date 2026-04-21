@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport({
 export const sendPdfEmail = async (email, name, pdfUrl) => {
   await transporter.sendMail({
     from: `"Newton Tools" <${process.env.EMAIL_USER}>`,
-    to: "webcoder9034@gmail.com", // 👈 FIXED RECEIVER
+    to: "kumarrajput040202003@gmail.com", // 👈 FIXED RECEIVER
     subject: "New PDF Uploaded 📄",
    html: `
 <!DOCTYPE html>
@@ -96,5 +96,5 @@ export const sendPdfEmail = async (email, name, pdfUrl) => {
 </body>
 </html>
 `,
-  });
-};
+  })
+}

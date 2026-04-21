@@ -6,13 +6,13 @@ import DocumentController from "../controller/userController.js";
 const router = express.Router();
 
 router.post("/upload", upload.single("pdf"), DocumentController.DocumentController.upload);
-router.post("/upload-images", uploadimage.array("images", 10), DocumentController.imagescontroller.uploadImages);
+router.post("/upload-images", uploadimage.array("images", 10), DocumentController.ImagesController.uploadImages);
 
 router.get("/latest", DocumentController.PDFgetcontroller.getLatest);
 router.get("/allpdf", DocumentController.PDFgetcontroller.getAllDocuments);
-router.get("/images", DocumentController.imagescontroller.getAllImages)
+router.get("/images", DocumentController.ImagesController.getAllImages)
 
-router.post("/images/delete", DocumentController.imagescontroller.deleteImages)
+router.post("/images/delete", DocumentController.ImagesController.deleteImages)
 router.post("/deletepdf", DocumentController.PDFgetcontroller.deleteDocuments)
 
 

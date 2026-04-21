@@ -6,49 +6,37 @@ export class AdminController {
 
   static async postSignup(req, res) {
     const { name, email, password } = req.body ?? {};
-    console.log(name)
     if (!name || !email || !password) {
       return res.status(400).json({ message: "All fields required" });
     }
 
     try {
       // Check if admin exists
-      db.query(
+      const [existingAdmin] = await db.execute(
         "SELECT id FROM admins WHERE email = ?",
-        [email],
-        async (err, result) => {
-
-          if (err) {
-            return res.status(500).json({ message: "Database error" });
-          }
-
-          if (result.length > 0) {
-            return res.status(400).json({ message: "Admin already exists" });
-          }
-
-          // Hash password
-          const hashedPassword = await bcrypt.hash(password, 10);
-
-          // Insert admin
-          db.query(
-            "INSERT INTO admins (name, email, password) VALUES (?, ?, ?)",
-            [name, email, hashedPassword],
-            (err, insertResult) => {
-
-              if (err) {
-                return res.status(500).json({ message: "Database error" });
-              }
-
-              return res.status(201).json({
-                message: "Admin created successfully",
-                adminId: insertResult.insertId
-              });
-            }
-          );
-        }
+        [email]
       );
 
+      if (existingAdmin.length > 0) {
+        return res.status(400).json({ message: "Admin already exists" });
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Insert admin
+      const [insertResult] = await db.execute(
+        "INSERT INTO admins (name, email, password) VALUES (?, ?, ?)",
+        [name, email, hashedPassword]
+      );
+
+      return res.status(201).json({
+        message: "Admin created successfully",
+        adminId: insertResult.insertId
+      });
+
     } catch (error) {
+      console.error("Signup error:", error);
       return res.status(500).json({ message: "Server error" });
     }
   }

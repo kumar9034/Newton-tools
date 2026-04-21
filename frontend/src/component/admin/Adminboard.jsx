@@ -60,9 +60,8 @@ const Adminboard = () => {
     formData.append("pdf", file);
 
     try {
-
       const res = await axios.post(
-        `/api/documents/upload`,
+        `http://localhost:3000/api/documents/upload`,
         formData,
         {
           headers: {
@@ -226,7 +225,7 @@ const Adminboard = () => {
           </li>
 
           <li onClick={() => setActiveTab("images-upload")} className="cursor-pointer">
-            Fastener
+            Promotion
           </li>
 
           <li onClick={() => setActiveTab("Slider-uploads")} className="cursor-pointer">

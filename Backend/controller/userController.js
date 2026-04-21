@@ -1,219 +1,88 @@
 import DocumentModel from "../models/usermodel.js";
 import ImageModel from "../models/imageModel.js";
-import path from "path"
-
-import { fileURLToPath } from "url";
+import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { sendPdfEmail } from "../config/Emailsystem.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 class DocumentController {
 
-  static upload(req, res) {
-    const { name, email } = req.body;   // 👈 email add kiya
-    const pdf = `${process.env.CDN_URL}/${req.file.key}`;     // S3 file URL
+  static upload = AsyncHandler(async (req, res) => {
 
-    if (!pdf) {
-      return res.status(400).json({ message: "PDF is required ❌" });
-    }
+  const { name, email } = req.body;
 
-    // 1️⃣ Save in MySQL
-    DocumentModel.uploadDocument({ name, pdf }, async (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: err });
-      }
+  // 🛑 validation FIRST
+  if (!req.file)
+    return res.status(400).json({ message: "PDF file missing" });
 
-      try {
-        // 2️⃣ Send Email after upload
-          await sendPdfEmail(  pdf);
-        // console.log(email) 
-        
-        // 3️⃣ Final response
-        res.status(200).json({
-          message: "PDF uploaded + Email sent ✅",
-          url: pdf
-        });
+  if (!name)
+    return res.status(400).json({ message: "Name required" });
 
-      } catch (emailError) {
-        res.status(200).json({
-          message: "PDF uploaded but Email failed ⚠️",
-          url: pdf,
-          emailError
-        });
-      }
-    });
-  }
+  const pdf = `${process.env.CDN_URL}/${req.file.key}`;
 
+  await DocumentModel.uploadDocument({
+    name: name ?? null,
+    pdf: pdf ?? null
+  });
+
+  // email background
+  sendPdfEmail(email, name, pdf)
+    .catch(err => console.error("Email error:", err));
+
+  res.json({
+    success: true,
+    message: "PDF uploaded successfully",
+    url: pdf
+  });
+
+});
 }
-
 
 class PDFgetcontroller {
 
-    static async getLatest(req, res) {
-        DocumentModel.getLatestDocument((err, result) => {
+  static getLatest = AsyncHandler(async (req, res) => {
+    const result = await DocumentModel.getLatestDocument();
+    if (!result.length)
+      return res.status(404).json({ message: "No document found" });
 
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
-
-            if (!result || result.length === 0) {
-                return res.status(404).json({ error: "No document found" });
-            }
-
-            const document = result[0];
-
-            return res.json({
-                id: document.id,
-                pdf: document.pdf, // yaha se pdf milega
-                created_at: document.created_at
-            });
-
-        });
-    }
-
-    static getAllDocuments = async (req, res) => {
-
-        DocumentModel.getAllDocuments((err, result) => {
-
-            if (err) {
-                return res.status(500).json({ error: err });
-            }
-
-            res.json(result);
-
-        });
-
-    };
-
-
-   static deleteDocuments = async (req, res) => {
-
-  const { id } = req.body;
-
-  if (!id || id.length === 0) {
-    return res.status(400).json({
-      success: false,
-      message: "No IDs provided"
-    });
-  }
-
-  DocumentModel.deleteDocuments(id, (error, result) => {
-
-    if (error) {
-      return res.status(500).json({
-        success: false,
-        error: error
-      });
-    }
-
-    res.json({
-      success: true,
-      message: "Documents deleted successfully",
-      deleted: result.affectedRows
-    });
-
+    res.json(result[0]);
   });
 
-};
+  static getAllDocuments = AsyncHandler(async (req, res) => {
+    const docs = await DocumentModel.getAllDocuments();
+    res.json(docs);
+  });
 
+  static deleteDocuments = AsyncHandler(async (req, res) => {
+    const { id } = req.body;
+    const result = await DocumentModel.deleteDocuments(id);
+    res.json({ success: true, deleted: result.affectedRows });
+  });
 }
 
-class imagescontroller {
+class ImagesController {
 
-    static async uploadImages(req, res) {
+  static uploadImages = AsyncHandler(async (req, res) => {
+    const folderName = req.body.name || "images";
 
-        try {
+    const images = req.files.map(file => ({
+      folder_name: folderName,
+      image_path: file.location
+    }));
 
-            if (!req.files || req.files.length === 0) {
-                return res.status(400).json({ message: "No images uploaded" });
-            }
+    await ImageModel.saveMultipleImages(images);
 
-            const folderName = req.body.name || "images";
+    res.json({ success: true, images });
+  });
 
-            const images = req.files.map(file => {
+  static getAllImages = AsyncHandler(async (req, res) => {
+    const images = await ImageModel.getAllImages();
+    res.json(images);
+  });
 
-                console.log(file.key);
-                console.log(file.location);
-
-                return {
-                    folder_name: folderName,
-                    image_path: file.location
-                };
-
-            });
-
-            const result = await ImageModel.saveMultipleImages(images);
-
-            res.json({
-                message: "Images uploaded successfully ✅",
-                images
-            });
-
-        } catch (error) {
-
-            console.error(error);
-
-            res.status(500).json({
-                error: error.message
-            });
-
-        }
-
-    }
-
-
-
-    static async getAllImages(req, res) {
-
-        try {
-
-            const images = await ImageModel.getAllImages();
-
-            if (images.length === 0) {
-                return res.status(404).json({ message: "No images found" });
-            }
-
-            res.json({
-                success: true,
-                total: images.length,
-                images
-            });
-
-        } catch (error) {
-
-            res.status(500).json({
-                error: error.message
-            });
-
-        }
-
-
-    }
-    static async deleteImages(req, res){
-      const { id } = req.body;
-      if (!id || id.length === 0) {
-        return res.status(400).json({
-          success: false,
-          message: "No IDs provided"
-        });
-      }
-      ImageModel.deleteImages(id, (error, result) => {
-        if (error) {
-          return res.status(500).json({
-            success: false,
-            error: error
-          });
-        }
-        res.json({
-          success: true,
-          message: "Images deleted successfully",
-          deleted: result.affectedRows
-        });
-      });
-
-    }
+  static deleteImages = AsyncHandler(async (req, res) => {
+    const { id } = req.body;
+    const result = await ImageModel.deleteImages(id);
+    res.json({ success: true, deleted: result.affectedRows });
+  });
 }
 
-
-
-export default { DocumentController, PDFgetcontroller, imagescontroller };
+export default { DocumentController, PDFgetcontroller, ImagesController };

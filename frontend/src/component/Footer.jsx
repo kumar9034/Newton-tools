@@ -44,11 +44,11 @@ const Footer = () => {
             Links
           </h3>
           <ul className="space-y-3 font-semibold">
-            <li><a href="#" className="hover:text-yellow-400">Home</a></li>
-            <li><a href="#" className="hover:text-yellow-400">About</a></li>
-            <li><a href="#" className="hover:text-yellow-400">Brands</a></li>
-            <li><a href="#" className="hover:text-yellow-400">Flyer</a></li>
-            <li><a href="#" className="hover:text-yellow-400">Locations</a></li>
+            <li><a href="/" className="hover:text-yellow-400">Home</a></li>
+            <li><a href="/about" className="hover:text-yellow-400">About</a></li>
+            <li><a href="/brands" className="hover:text-yellow-400">Brands</a></li>
+            <li><a href="/flyer" className="hover:text-yellow-400">Flyer</a></li>
+            <li><a href="/locations" className="hover:text-yellow-400">Locations</a></li>
           </ul>
         </div>
 

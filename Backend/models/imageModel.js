@@ -1,48 +1,33 @@
-import db from "../config/Db.js";
+import db from "../config/db.js";
 
 class ImageModel {
 
-  static saveMultipleImages(images) {
+  // Save multiple images
+  static async saveMultipleImages(images) {
+    const values = images.map(img => [img.image_path]);
 
-    return new Promise((resolve, reject) => {
+    const sql = `
+      INSERT INTO images (folder_path)
+      VALUES ?
+    `;
 
-      const values = images.map(img => [
-        img.image_path
-      ]);
-
-      const sql = `
-        INSERT INTO images ( folder_path)
-        VALUES ?
-      `;
-
-      db.query(sql, [values], (err, result) => {
-
-        if (err) return reject(err);
-
-        resolve(result);
-
-      });
-
-    });
+    const [result] = await db.query(sql, [values]);
+    return result;
   }
 
-  static getAllImages() {
-  return new Promise((resolve, reject) => {
+  // Get all images
+  static async getAllImages() {
+    const sql = "SELECT * FROM images ORDER BY id DESC";
+    const [rows] = await db.execute(sql);
+    return rows;
+  }
 
-    const sql = "SELECT * FROM images";
-
-    db.query(sql, (err, results) => {
-      if (err) return reject(err);
-      resolve(results);
-    });
-
-  });
-}
-
-static deleteImages(ids, callback) {
-  const sql = "DELETE FROM images WHERE id IN (?)";
-  db.query(sql, [ids], callback);
-}
+  // Delete images
+  static async deleteImages(ids) {
+    const sql = "DELETE FROM images WHERE id IN (?)";
+    const [result] = await db.query(sql, [ids]);
+    return result;
+  }
 
 }
 

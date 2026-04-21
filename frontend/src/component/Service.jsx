@@ -57,7 +57,7 @@ const Service = () => {
     {
       title: "Tool Servicing",
       desc: "Regular maintenance & servicing.",
-      image: "service.webp",
+      image: "ChatGPTImageApr21202603_32_32P.jpeg",
     },
     {
       title: "Spare Parts",

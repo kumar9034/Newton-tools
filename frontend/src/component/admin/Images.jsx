@@ -2,69 +2,67 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const Images = () => {
-  const [files, setFiles] = useState([]);
+  const [file, setFile] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [ name ,setname ] =useState("")
 
   const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB
-  const MAX_FILES = 10;
 
+  // 📁 File Select
   const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
     setError("");
 
-    const selectedFiles = Array.from(e.target.files);
+    if (!selectedFile) return;
 
-    if (selectedFiles.length > MAX_FILES) {
-      setError("You can upload maximum 10 images");
+    // Only PDF allowed
+    if (selectedFile.type !== "application/pdf") {
+      setError("Only PDF allowed");
       return;
     }
 
-    // Validation
-    for (let file of selectedFiles) {
-      if (!file.type.startsWith("image/")) {
-        setError("Only image files are allowed");
-        return;
-      }
-
-      if (file.size > MAX_FILE_SIZE) {
-        setError("Each file must be less than 15MB");
-        return;
-      }
+    // Size check
+    if (selectedFile.size > MAX_FILE_SIZE) {
+      setError("PDF must be less than 15MB");
+      return;
     }
 
-    setFiles(selectedFiles);
-    console.log("Selected files:", selectedFiles);
+    setFile(selectedFile);
   };
 
+  // 🚀 Upload PDF
   const handleUpload = async () => {
-    if (files.length === 0) {
-      setError("Please select image files first");
+    if (!file) {
+      setError("Please select PDF");
       return;
     }
 
     const formData = new FormData();
-
-    files.forEach((file) => {
-      formData.append("images", file); // important
-    });
+    formData.append("pdf", file); // multer field name same hona chahiye
+    formData.append("name", name);
 
     try {
-      const response = await axios.post(
-        `/api/documents/upload-images`,
-        formData
+      setLoading(true);
+      console.log(formData);
+      const res = await axios.post(
+        "/api/promotion",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       );
 
-      console.log(response)
-      if (response.status === 200) {
-        alert("Images uploaded successfully!");
-        setFiles([]);
-        setError("");
-      } else {
-        setError("Failed to upload images");
-      }
+      alert("PDF Uploaded Successfully ✅");
+      setFile(null);
+      setname("");
+      setError("");
 
     } catch (err) {
       console.error(err);
-      setError("Error uploading images");
+      setError("Upload failed ❌");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,17 +71,17 @@ const Images = () => {
 
       {/* Upload Section */}
       <div className="mb-8">
-        <h3 className="font-semibold mb-3">Upload Images (Max 10)</h3>
+        <h3 className="font-semibold mb-3">Upload PDF</h3>
 
         <label className="block border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-yellow-500 transition">
           <p className="text-gray-500 mb-2">
-            Click to upload images (Max 15MB each)
+            Click to upload PDF (Max 15MB)
           </p>
 
+          {/* ⭐ INPUT SAME DESIGN — ONLY PDF */}
           <input
             type="file"
-            accept="image/*"
-            multiple
+            accept="application/pdf"
             onChange={handleFileChange}
             className="hidden"
           />
@@ -93,44 +91,43 @@ const Images = () => {
           <p className="text-red-500 text-sm mt-3">{error}</p>
         )}
       </div>
-
+        <div className="flex flex-col gap-4">
+          <h2>Name </h2>
+          <input type="text" value={name} onChange={(e) => setname(e.target.value)} placeholder="Enter Owner Name" className="border border-gray-300 rounded px-3 py-2 w-full mb-4" />
+        </div>
       {/* Preview Section */}
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h3 className="font-semibold">Images Preview</h3>
+          <h3 className="font-semibold">PDF Preview</h3>
 
           <button
             onClick={handleUpload}
-            className="bg-yellow-500 px-4 py-2 rounded font-semibold hover:bg-yellow-600"
+            disabled={loading}
+            className="bg-yellow-500 px-4 py-2 rounded font-semibold hover:bg-yellow-600 text-white"
           >
-            Upload Images
+            {loading ? "Uploading..." : "Upload PDF"}
           </button>
         </div>
 
-        {files.length === 0 ? (
+        {file === null ? (
           <p className="text-gray-400 text-sm">
-            No images selected yet
+            No PDF selected yet
           </p>
         ) : (
           <div className="flex flex-wrap gap-4">
-            {files.map((file, index) => (
-              <div
-                key={index}
-                className="border border-gray-200 rounded-lg p-3 bg-gray-50 w-40"
-              >
-                <div className="h-24 flex items-center justify-center bg-gray-300 rounded text-xs">
-                  📷 Image
-                </div>
-
-                <p className="text-xs mt-2 truncate font-medium">
-                  {file.name}
-                </p>
-
-                <p className="text-xs text-gray-500">
-                  {(file.size / (1024 * 1024)).toFixed(2)} MB
-                </p>
+            <div className="border border-gray-200 rounded-lg p-3 bg-gray-50 w-40">
+              <div className="h-24 flex items-center justify-center bg-red-200 rounded text-3xl">
+                📄
               </div>
-            ))}
+
+              <p className="text-xs mt-2 truncate font-medium">
+                {file.name}
+              </p>
+
+              <p className="text-xs text-gray-500">
+                {(file.size / (1024 * 1024)).toFixed(2)} MB
+              </p>
+            </div>
           </div>
         )}
       </div>
