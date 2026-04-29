@@ -43,7 +43,7 @@ const Hero_section = () => {
     { brand: "dewalt-logo-2.png" },
     { brand: "black-logo (1).svg" },
     { brand: "Diablo-logo.webp" },
-    { brand: "dremel-logo.png" },
+    { brand: "dremel-logo-Photoroom.png" },
     { brand: "Edge-logo.webp" },
     { brand: "energizer-logo.svg" },
     { brand: "estwing-logo.png" },
@@ -147,7 +147,7 @@ const Hero_section = () => {
     setMessage({ type: "", text: "" });
 
     try {
-      const response = await fetch("http://localhost:3000/api/subscribe", {
+      const response = await fetch("/api/subscribe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -250,7 +250,7 @@ const Hero_section = () => {
           <span className="text-lg sm:text-3xl md:text-4xl font-[700] leading-tight">
             BE THE FIRST TO KNOW
           </span>
-          <p>stay in loop above new tools, sales, and promotions</p>
+          <p>stay in loop about new tools, sales, and promotions</p>
         </h1>
 
         <div className="w-full max-w-3xl mt-5 mb-8 gap-5 flex flex-wrap  justify-center items-center">

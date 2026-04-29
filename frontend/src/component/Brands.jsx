@@ -51,7 +51,6 @@ const Brands = () => {
     { brand: "masterlock-logo.png"},
     { brand: "mechtools-logo.avif"},
     { brand: "1755729351199-Photoroom.png"},
-    { brand: "mechtools-logo.avif"},
     { brand: "metabo-logo.png"},
     { brand: "milwaukee-electric-tool-logo-png_seeklogo-178086.png"},
     { brand: "mq-logo.jpg"},

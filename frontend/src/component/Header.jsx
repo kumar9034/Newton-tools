@@ -159,7 +159,7 @@ const Header = () => {
 
           {/* MOBILE BUTTON */}
           <button
-            className="md:hidden text-2xl z-50"
+            className="md:hidden text-2xl z-50 cursor-pointer text-black"
             onClick={() => setOpen(!open)}
           >
             {open ? <FaTimes /> : <FaBars />}

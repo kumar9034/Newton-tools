@@ -10,17 +10,19 @@ const Home = () => {
   const textRef = useRef(null);
 
   useEffect(() => {
-    gsap.fromTo(
-      textRef.current,
-      { x: "0%" },
-      {
-        x: "100%",
-        duration: 15,          // speed (lower = faster)
-        ease: "linear",
-        repeat: -1,            // infinite
-      }
-    );
-  }, []);
+  const el = textRef.current;
+
+  gsap.fromTo(
+    el,
+    { x: "-100%" },      // completely outside from left
+    {
+      x: window.innerWidth, // go completely outside right
+      duration: 15,
+      ease: "linear",
+      repeat: -1
+    }
+  );
+}, []);
   useEffect(()=>{
     const fatch =async()=>{
       const res =await axios.get(`/`)
@@ -34,14 +36,14 @@ const Home = () => {
     <div >
       <Header/>
       <div className='pt-27'>
-         <div className="w-full h-9 bg-yellow-500 overflow-hidden flex items-center">
-      <p
-        ref={textRef}
-        className="text-[#0609f7] whitespace-nowrap px-4"
-      >
-       Authorized Pneumatic & Power Tool Service & Support Specialists
-      </p>
-    </div>
+  <div className="w-full h-9 bg-yellow-500 overflow-hidden flex items-center relative">
+    <p
+      ref={textRef}
+      className="absolute text-[#0609f7] whitespace-nowrap px-4"
+    >
+      Authorized Pneumatic & Power Tool Service & Support Specialists
+    </p>
+  </div>
       <Hero_section/>
       <Footer/>
 

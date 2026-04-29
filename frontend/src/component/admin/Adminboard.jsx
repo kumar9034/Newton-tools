@@ -61,7 +61,7 @@ const Adminboard = () => {
 
     try {
       const res = await axios.post(
-        `http://localhost:3000/api/documents/upload`,
+        `/api/documents/upload`,
         formData,
         {
           headers: {

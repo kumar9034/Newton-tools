@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Download, ChevronLeft, ChevronRight, Loader2, Maximize2, Minimize2 } from "lucide-react";
 import axios from "axios";
 
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-
+pdfjs.GlobalWorkerOptions.workerSrc =
+  `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 
 
@@ -16,27 +16,50 @@ const FlyerViewer = () => {
   const [pageImages, setPageImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [size, setSize] = useState({ width: 340, height: 480 });
-  
+
   const [isZoomed, setIsZoomed] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
 
-  useEffect(() => {
-    const updateSize = () => {
-      const w = window.innerWidth;
-      let pageWidth = w < 640 ? 280 : w < 1024 ? 340 : 420;
-      setSize({ width: pageWidth, height: pageWidth * 1.414 });
-    };
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
+ useEffect(() => {
+  const updateSize = () => {
+    // Desktop mode on phone ko handle karne ke liye innerWidth hi best hai
+    const vw = window.innerWidth;
+    
+    let pageWidth;
+    let pageHeight;
+
+    // 📱 MOBILE (Portrait)
+    if (vw < 600) {
+      pageWidth = vw * 0.98;           // 90% se badha kar 98% kar diya (Full width ke paas)
+      pageHeight = pageWidth * 1.4;    // A4 ratio ke kareeb
+    } 
+    // 📲 TABLET / DESKTOP MODE ON PHONE
+    else if (vw < 1100) {
+      // Agar phone pe desktop site on hai, toh vw 980px+ hoga
+      // Is case mein hum flyer ko 90% screen width denge
+      pageWidth = vw * 0.90; 
+      pageHeight = pageWidth * 1.3;
+    } 
+    // 💻 LARGE DESKTOP
+    else {
+      pageWidth = 550;                 // Desktop par limit zaroori hai varna pixelate hoga
+      pageHeight = pageWidth * 1.414;
+    }
+
+    setSize({ width: pageWidth, height: pageHeight });
+  };
+
+  updateSize();
+  window.addEventListener("resize", updateSize);
+  return () => window.removeEventListener("resize", updateSize);
+}, []);
 
   const convertPagesToImages = async (pdf) => {
     setLoading(true);
     const images = [];
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
-      const viewport = page.getViewport({ scale: 2.5 }); 
+      const viewport = page.getViewport({ scale: 2.5 });
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
       canvas.width = viewport.width;
@@ -51,12 +74,15 @@ const FlyerViewer = () => {
   useEffect(() => {
     const fetchPdf = async () => {
       try {
+        // const imageurl = {img : `BNT-40X-Main-A-420x420-Photoroom.png`}
         const res = await axios.get(`/api/documents/latest`);
         setPdfUrl(res.data.pdf);
+        console.log("PDF URL:", res.data);
       } catch (err) { console.error(err); }
     };
     fetchPdf();
-  }, []);
+  }, [setPdfUrl]);
+  console.log("PDF URL:", pdfurl);
 
   const handleMouseMove = (e) => {
     if (!isZoomed) return;
@@ -67,8 +93,8 @@ const FlyerViewer = () => {
   };
 
   return (
-    <div className="sm:min-h-screen h-auto bg-[#050505] text-white flex flex-col items-center p-4 md:p-8 font-sans overflow-hidden">
-      
+    <div className="h-auto  bg-[#050505] text-white flex flex-col items-center p-4 md:p-8 font-sans overflow-hidden">
+
       {/* 🛠️ COMPACT HEADER */}
       <header className="w-full max-w-5xl sm:mb-12 mb-5 flex justify-between items-center bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md ">
         <div className="flex items-center gap-3">
@@ -77,17 +103,17 @@ const FlyerViewer = () => {
           </div>
           <h1 className="text-sm font-bold tracking-[0.2em] uppercase italic">Flyer </h1>
         </div>
-        <button onClick={() => window.open(pdfurl)} className="bg-yellow-400 text-black px-5 py-2 rounded-full font-bold text-xs transition-transform active:scale-95 cursor-pointer shadow-[0_0_15px_rgba(250,204,21,0.3)]">
+        {/* <button onClick={() => window.open(pdfurl)} className="bg-yellow-400 text-black px-5 py-2 rounded-full font-bold text-xs transition-transform active:scale-95 cursor-pointer shadow-[0_0_15px_rgba(250,204,21,0.3)]">
           PDF SAVE
-        </button>
+        </button> */}
       </header>
 
       {/* 📖 FLYER STAGE WITH INTEGRATED BUTTONS */}
       <main className="relative  flex-1 flex items-center justify-center w-full">
-        
+
         {/* 📚 FLYER WRAPPER */}
-        <div className="relative group p-4">
-          
+        <div className="relative group p-4  ">
+
           {loading && (
             <div className="flex flex-col items-center gap-4">
               <Loader2 className="animate-spin text-yellow-400" size={32} />
@@ -99,37 +125,38 @@ const FlyerViewer = () => {
 
           {/* ⬅️ PREV BUTTON (Edge Attached) */}
           {!isZoomed && !loading && (
-            <button 
+            <button
               onClick={() => bookRef.current.pageFlip().flipPrev()}
-              className="absolute sm:left-[-20px] left-[-10] top-1/2 -translate-y-1/2 z-10 p-4 rounded-full bg-white text-black hover:bg-yellow-400 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)] active:scale-90"
+              className="absolute left-2 sm:-left-5 top-1/2 -translate-y-1/2 z-[10] p-4 rounded-full bg-white text-black hover:bg-yellow-400 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)] active:scale-90"
             >
               <ChevronLeft size={24} strokeWidth={3} />
             </button>
           )}
 
           {pageImages.length > 0 && (
-            <div className="shadow-[0_60px_100px_-20px_rgba(0,0,0,1)] rounded-sm overflow-hidden border sm:w-auto w-90 border-white/5">
-              <HTMLFlipBook 
-                width={size.width} 
-                height={size.height} 
-                showCover={true} 
+            <div className="shadow-[0_60px_100px_-20px_rgba(0,0,0,1)] rounded-sm overflow-hidden border border-white/5  ">
+              <HTMLFlipBook
+                width={size.width}
+                height={size.height}
+                showCover={true}
                 ref={bookRef}
                 useMouseEvents={false}
                 clickEventForward={false}
+                mobileScrollSupport={true}   // ⭐ add this
                 className="mx-auto"
               >
                 {pageImages.map((img, i) => (
-                  <div 
-                    key={i} 
+                  <div
+                    key={i}
                     className="bg-white relative overflow-hidden select-none cursor-crosshair"
                     onDoubleClick={() => setIsZoomed(!isZoomed)}
                     onMouseMove={handleMouseMove}
                   >
-                    <motion.img 
-                      src={img} 
-                      alt="page" 
+                    <motion.img
+                      src={img}
+                      alt="page"
                       className="w-full h-full object-cover shadow-inner"
-                      animate={{ 
+                      animate={{
                         scale: isZoomed ? 2.5 : 1,
                         x: isZoomed ? `${(50 - mousePos.x) * 0.4}%` : 0,
                         y: isZoomed ? `${(50 - mousePos.y) * 0.4}%` : 0
@@ -145,9 +172,9 @@ const FlyerViewer = () => {
 
           {/* ➡️ NEXT BUTTON (Edge Attached) */}
           {!isZoomed && !loading && (
-            <button 
+            <button
               onClick={() => bookRef.current.pageFlip().flipNext()}
-              className="absolute sm:right-[-20px] right-[15px] top-1/2 -translate-y-1/2 z-[10] p-4 rounded-full bg-white text-black hover:bg-yellow-400 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)] active:scale-90"
+              className="absolute right-2 sm:-right-5 top-1/2 -translate-y-1/2 z-[10] p-4 rounded-full bg-white text-black hover:bg-yellow-400 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)] active:scale-90"
             >
               <ChevronRight size={24} strokeWidth={3} />
             </button>

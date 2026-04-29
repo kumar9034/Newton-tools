@@ -24,7 +24,7 @@ const Login = () => {
     try {
       // Replace '/api/login' with your real auth endpoint
 
-      const res = await axios.post(`http://localhost:3000/api/admin/login`, form) 
+      const res = await axios.post(`/api/admin/login`, form) 
     
 
       console.log(res)

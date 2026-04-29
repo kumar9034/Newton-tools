@@ -1,55 +1,56 @@
-// Sildermodel.js
-import db from "../config/Db.js";
+// SliderModel.js
+import db from "../config/db.js";
 
 class SliderModel {
-  static saveMultipleImages(images) {
-  return new Promise((resolve, reject) => {
 
-    const values = images.map(img => [
-      img.folder_name,
-      img.image_path,
-      img.title,
-      img.desc
-    ]);
+  // SAVE MULTIPLE IMAGES
+  static async saveMultipleImages(images) {
+    try {
+      const values = images.map(img => [
+        img.folder_name,
+        img.image_path,
+        img.title,
+        img.desc
+      ]);
 
-    const sql = `
-      INSERT INTO slider_images 
-      (folder_name, image_path, title, \`desc\`) 
-      VALUES ?
-    `;
+      const sql = `
+        INSERT INTO slider_images 
+        (folder_name, image_path, title, \`desc\`) 
+        VALUES ?
+      `;
 
-    db.query(sql, [values], (err, result) => {
-      if (err) return reject(err);
-      resolve({ insertedIds: result.insertId, images });
-    });
-  });
-}
+      const [result] = await db.query(sql, [values]);
 
-  static getAllSliderImages() {
-    return new Promise((resolve, reject) => {
-      const sql = "SELECT * FROM slider_images ORDER BY created_at DESC";
-      db.query(sql, (err, results) => {
-        if (err) return reject(err);
-        resolve(results);
-      });
-    });
+      return { insertedIds: result.insertId, images };
+
+    } catch (error) {
+      throw error;
+    }
   }
 
-   static deleteDocuments(ids, callback) {
+  // GET ALL SLIDERS
+  static async getAllSliderImages() {
+    try {
+      const sql = "SELECT * FROM slider_images ORDER BY created_at DESC";
+      const [rows] = await db.query(sql);
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  }
 
-  // Convert string IDs → number IDs
-  const numericIds = ids.map(id => Number(id));
+  // DELETE MULTIPLE
+  static async deleteDocuments(ids) {
+    try {
+      const numericIds = ids.map(id => Number(id));
+      const sql = `DELETE FROM slider_images WHERE id IN (${numericIds.join(",")})`;
+      const [result] = await db.query(sql);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 
-  console.log("Deleting IDs:", numericIds);
-
-  // FINAL WORKING SQL
-  const sql = `DELETE FROM slider_images WHERE id IN (${numericIds.join(",")})`;
-
-  db.query(sql, (err, result) => {
-    if (err) return callback(err, null);
-    callback(null, result);
-  });
-}
 }
 
 export default SliderModel;

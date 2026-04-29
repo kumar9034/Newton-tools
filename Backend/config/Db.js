@@ -33,4 +33,5 @@ pool.getConnection((err, connection) => {
 });
 
 // Promise version export (so we can use async/await)
-export default pool.promise();
+const db = pool.promise();
+export default db
