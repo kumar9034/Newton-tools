@@ -11,7 +11,7 @@ const About = () => {
   return (
   <>
     <Header/>
-    <section className="w-full bg-gray-50 pt-30 py-16 px-4">
+    <section className="w-full bg-gray-50 pt-37 py-16 px-4">
       <div className="max-w-6xl mx-auto">
 
         {/* Heading */}

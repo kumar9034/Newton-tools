@@ -74,7 +74,7 @@ const Service = () => {
   return (
     <div>
       <Header />
-      <div className="bg-gray-50 min-h-screen py-10 px-4 pt-30 md:px-12">
+      <div className="bg-gray-50 min-h-screen py-10 px-4 pt-37 md:px-12">
 
         {/* Header */}
         <div className="text-center mb-12">
