@@ -77,7 +77,7 @@ const FlyerViewer = () => {
   useEffect(() => {
     const fetchPdf = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/documents/latest`);
+        const res = await axios.get(`/api/documents/latest`);
         setPdfUrl(res.data.pdf);
       } catch (err) { console.error(err); }
     };
