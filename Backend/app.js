@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+  origin: process.env.CORS_ORIGIN || process.env.VITE_API_KEY || "http://localhost:5173",
   credentials: true
 };
 app.use(cors(corsOptions));
