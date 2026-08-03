@@ -10,16 +10,17 @@ dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
+  port: process.env.DB_PORT || 3306, // 👈 Ye line add karo
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DATABASE,
 
   waitForConnections: true,
-  connectionLimit: 10,   // max parallel DB connections
+  connectionLimit: 10,
   queueLimit: 0,
   connectTimeout: 60000,
   enableKeepAlive: true,
-  keepAliveInitialDelay: 0
+  keepAliveInitialDelay: 0,
 });
 
 // TEST connection once at startup
@@ -28,10 +29,9 @@ pool.getConnection((err, connection) => {
     console.error("❌ MySQL Pool Error:", err);
   } else {
     console.log("✅ MySQL Pool Connected Successfully");
-    connection.release(); // important
+    connection.release();
   }
 });
 
-// Promise version export (so we can use async/await)
 const Db = pool.promise();
-export default Db
+export default Db;
