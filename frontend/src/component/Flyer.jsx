@@ -75,14 +75,8 @@ const FlyerViewer = () => {
 
   /* ---------------- FETCH PDF ---------------- */
   useEffect(() => {
-    const fetchPdf = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_API_KEY}/api/documents/latest`);
-        setPdfUrl("/NEW11 DEWALT CDR.pdf");
-      } catch (err) { console.error(err); }
-    };
-    fetchPdf();
-  }, []);
+  setPdfUrl("/NEW11 DEWALT CDR.pdf");
+}, []);
 
   /* ---------------- POINTER SYSTEM (MOUSE + TOUCH) ---------------- */
 
@@ -137,7 +131,7 @@ const FlyerViewer = () => {
             </div>
           )}
 
-          {pdfurl && <Document file="NEW11 DEWALT CDR.pdf" onLoadSuccess={convertPagesToImages} className="hidden" />}
+          {pdfurl && <Document file={pdfurl} onLoadSuccess={convertPagesToImages} className="hidden" />}
 
           {!isZoomed && !loading && (
             <button onClick={() => bookRef.current.pageFlip().flipPrev()}
