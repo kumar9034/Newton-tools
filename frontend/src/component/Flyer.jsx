@@ -137,7 +137,7 @@ const FlyerViewer = () => {
             </div>
           )}
 
-          {pdfurl && <Document file={pdfurl} onLoadSuccess={convertPagesToImages} className="hidden" />}
+          {pdfurl && <Document file="NEW11 DEWALT CDR.pdf" onLoadSuccess={convertPagesToImages} className="hidden" />}
 
           {!isZoomed && !loading && (
             <button onClick={() => bookRef.current.pageFlip().flipPrev()}
