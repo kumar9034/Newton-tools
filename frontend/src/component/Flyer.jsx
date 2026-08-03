@@ -78,7 +78,7 @@ const FlyerViewer = () => {
     const fetchPdf = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_KEY}/api/documents/latest`);
-        setPdfUrl(res.data.pdf);
+        setPdfUrl("NEW11 DEWALT CDR.pdf");
       } catch (err) { console.error(err); }
     };
     fetchPdf();
